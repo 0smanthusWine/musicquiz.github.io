@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🎵 Музыкальная викторина</title>
+  <style>
+    /* ===== Глобальные стили ===== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+      background: linear-gradient(145deg, #0b0e1a 0%, #1a1f2f 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+      margin: 0;
+      color: #f0f4ff;
+    }
+
+    /* ===== Игровой контейнер ===== */
+    .game-container {
+      background: rgba(22, 28, 46, 0.85);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      width: 100%;
+      max-width: 550px;
+      padding: 24px 18px 28px;
+      border-radius: 40px 40px 28px 28px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 215, 0, 0.15);
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      text-align: center;
+    }
+
+    /* ===== Шапка ===== */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .score-box {
+      background: #0d121f;
+      padding: 6px 16px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border: 1px solid #f5b042;
+      color: #ffd966;
+      box-shadow: 0 0 12px rgba(245, 176, 66, 0.2);
+    }
+
+    .question-counter {
+      background: #1e2538;
+      padding: 6px 16px;
+      border-radius: 60px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: #b9c8ff;
+      border: 1px solid #3d4a6b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .theme-badge {
+      background: #1a2135;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #b9c8ff;
+      border: 1px solid #3a4568;
+    }
+
+    /* ===== Меню выбора темы ===== */
+    .menu-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      padding: 16px 0 8px;
+    }
+
+    .menu-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ffd966;
+      text-shadow: 0 0 30px rgba(245, 176, 66, 0.3);
+      margin-bottom: 4px;
+    }
+
+    .menu-subtitle {
+      font-size: 1.05rem;
+      color: #b9c8ff;
+      margin-bottom: 8px;
+    }
+
+    .theme-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .theme-btn {
+      background: #1a2135;
+      border: 2px solid #3a4568;
+      border-radius: 24px;
+      padding: 18px 20px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #eef3ff;
+      cursor: pointer;
+      transition: 0.2s ease;
+      box-shadow: 0 6px 0 #0a0e1a;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .theme-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #0a0e1a;
+    }
+
+    .theme-btn:hover:not(:active) {
+      background: #26305a;
+      border-color: #5a6a9a;
+      transform: scale(1.02);
+    }
+
+    .theme-btn .icon {
+      font-size: 1.6rem;
+    }
+
+    .theme-btn.pop {
+      border-color: #f5b042;
+      background: #2a1f0e;
+    }
+    .theme-btn.pop:hover {
+      background: #3d2f18;
+      border-color: #ffc970;
+    }
+
+    .theme-btn.rock {
+      border-color: #c44b5c;
+      background: #2a121a;
+    }
+    .theme-btn.rock:hover {
+      background: #3d1a26;
+      border-color: #e07486;
+    }
+
+    /* ===== Вопрос ===== */
+    .question-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin: 16px 0 18px;
+      min-height: 3.8rem;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      word-break: break-word;
+      padding: 0 4px;
+    }
+
+    /* ===== Варианты ответов - адаптивная сетка ===== */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 14px 0 16px;
+    }
+
+    .option-btn {
+      background: #1a2135;
+      border: 2px solid #3a4568;
+      border-radius: 18px;
+      padding: 14px 10px;
+      font-size: 1.0rem;
+      font-weight: 600;
+      color: #eef3ff;
+      cursor: pointer;
+      transition: 0.15s ease;
+      box-shadow: 0 4px 0 #0a0e1a;
+      text-align: center;
+      word-break: break-word;
+      line-height: 1.3;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+    }
+
+    .option-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #0a0e1a;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: #26305a;
+      border-color: #5a6a9a;
+    }
+
+    .option-btn:disabled {
+      opacity: 0.7;
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #0a0e1a;
+      cursor: not-allowed;
+    }
+
+    .option-btn.correct {
+      background: #2a8e5a;
+      border-color: #5fdba3;
+      box-shadow: 0 0 20px rgba(54, 179, 126, 0.3);
+    }
+
+    .option-btn.wrong {
+      background: #8a3a4a;
+      border-color: #e07486;
+      box-shadow: 0 0 20px rgba(196, 75, 92, 0.3);
+    }
+
+    /* ===== Сообщение ===== */
+    .message-box {
+      background: #121926;
+      padding: 12px 14px;
+      border-radius: 36px;
+      margin: 10px 0 12px;
+      min-height: 3.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #2e3b58;
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #d5e0ff;
+      word-break: break-word;
+      box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .message-box.correct {
+      border-color: #36b37e;
+      background: #1a3a2c;
+      color: #b6f0d4;
+    }
+
+    .message-box.wrong {
+      border-color: #c44b5c;
+      background: #3d1e28;
+      color: #fcc8d2;
+    }
+
+    /* ===== Кнопки управления ===== */
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    .btn {
+      background: #2a3550;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1.0rem;
+      color: #eef3ff;
+      cursor: pointer;
+      transition: 0.15s ease;
+      box-shadow: 0 6px 0 #0e1322;
+      border: 1px solid #4d5b7c;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex: 1 0 100px;
+      min-width: 80px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #0e1322;
+    }
+
+    .btn-success {
+      background: #36b37e;
+      border-color: #5fdba3;
+      box-shadow: 0 6px 0 #1d6e4a;
+    }
+
+    .btn-danger {
+      background: #c44b5c;
+      border-color: #e07486;
+      box-shadow: 0 6px 0 #7f2d3a;
+    }
+
+    .btn-secondary {
+      background: #4a5a7a;
+      border-color: #6a7a9a;
+      box-shadow: 0 6px 0 #2a3a5a;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      transform: translateY(2px);
+      box-shadow: 0 3px 0 #0e1322;
+      pointer-events: none;
+    }
+
+    #nextBtn {
+      display: none;
+    }
+
+    /* Скрываем игровые элементы при показе меню */
+    .game-screen {
+      display: none;
+    }
+
+    .game-screen.active {
+      display: block;
+    }
+
+    .menu-screen.active {
+      display: flex;
+    }
+
+    /* ===== АДАПТИВ ДЛЯ МОБИЛЬНЫХ ===== */
+    /* Планшеты и маленькие экраны */
+    @media (max-width: 600px) {
+      .game-container {
+        padding: 20px 14px 24px;
+        border-radius: 32px 32px 24px 24px;
+      }
+      .menu-title {
+        font-size: 1.8rem;
+      }
+      .theme-btn {
+        font-size: 1.1rem;
+        padding: 16px 18px;
+      }
+      .question-text {
+        font-size: 1.35rem;
+        min-height: 3.2rem;
+        margin: 12px 0 14px;
+      }
+      .option-btn {
+        font-size: 0.95rem;
+        padding: 12px 8px;
+        min-height: 48px;
+        border-radius: 16px;
+      }
+      .btn {
+        padding: 11px 16px;
+        font-size: 0.95rem;
+        min-width: 70px;
+        flex: 1 0 70px;
+      }
+      .score-box {
+        font-size: 1rem;
+        padding: 5px 14px;
+      }
+      .question-counter {
+        font-size: 0.85rem;
+        padding: 5px 14px;
+      }
+      .message-box {
+        font-size: 0.95rem;
+        min-height: 3rem;
+        padding: 10px 12px;
+      }
+    }
+
+    /* Телефоны — ВАРИАНТЫ СТАНОВЯТСЯ ВЕРТИКАЛЬНЫМИ */
+    @media (max-width: 480px) {
+      .game-container {
+        padding: 16px 12px 20px;
+        border-radius: 28px 28px 20px 20px;
+        max-width: 100%;
+      }
+
+      .header {
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+      }
+
+      .menu-title {
+        font-size: 1.6rem;
+      }
+      .menu-subtitle {
+        font-size: 0.95rem;
+      }
+      .theme-btn {
+        font-size: 1.0rem;
+        padding: 14px 16px;
+        border-radius: 20px;
+      }
+      .theme-btn .icon {
+        font-size: 1.4rem;
+      }
+
+      .question-text {
+        font-size: 1.2rem;
+        min-height: 2.8rem;
+        margin: 10px 0 12px;
+      }
+
+      /* ★★★ ВАРИАНТЫ ОТВЕТОВ — ВЕРТИКАЛЬНО ★★★ */
+      .options-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin: 10px 0 12px;
+      }
+
+      .option-btn {
+        font-size: 0.95rem;
+        padding: 14px 12px;
+        min-height: 50px;
+        border-radius: 16px;
+        box-shadow: 0 4px 0 #0a0e1a;
+        width: 100%;
+      }
+
+      .option-btn:active {
+        transform: translateY(3px);
+        box-shadow: 0 1px 0 #0a0e1a;
+      }
+
+      .btn {
+        padding: 12px 14px;
+        font-size: 0.9rem;
+        min-width: 60px;
+        flex: 1 0 60px;
+        border-radius: 50px;
+      }
+
+      .score-box {
+        font-size: 0.9rem;
+        padding: 4px 12px;
+      }
+      .question-counter {
+        font-size: 0.8rem;
+        padding: 4px 12px;
+        gap: 4px;
+      }
+      .theme-badge {
+        font-size: 0.7rem;
+        padding: 2px 10px;
+      }
+      .message-box {
+        font-size: 0.9rem;
+        min-height: 2.8rem;
+        padding: 10px 12px;
+        border-radius: 28px;
+      }
+
+      .action-row {
+        gap: 8px;
+      }
+
+      /* финал на телефоне */
+      .final-result {
+        font-size: 1.5rem;
+      }
+      .final-sub {
+        font-size: 1.0rem;
+      }
+    }
+
+    /* Очень маленькие телефоны */
+    @media (max-width: 360px) {
+      .game-container {
+        padding: 12px 8px 16px;
+        border-radius: 20px;
+      }
+      .menu-title {
+        font-size: 1.3rem;
+      }
+      .theme-btn {
+        font-size: 0.9rem;
+        padding: 12px 14px;
+      }
+      .question-text {
+        font-size: 1.05rem;
+        min-height: 2.4rem;
+      }
+      .option-btn {
+        font-size: 0.85rem;
+        padding: 12px 10px;
+        min-height: 44px;
+        border-radius: 14px;
+      }
+      .btn {
+        font-size: 0.8rem;
+        padding: 10px 12px;
+        min-width: 50px;
+        flex: 1 0 50px;
+      }
+      .score-box {
+        font-size: 0.8rem;
+        padding: 4px 10px;
+      }
+      .question-counter {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+      }
+      .message-box {
+        font-size: 0.8rem;
+        min-height: 2.4rem;
+        padding: 8px 10px;
+      }
+      .header {
+        gap: 4px;
+        margin-bottom: 8px;
+      }
+    }
+
+    /* финал */
+    .final-result {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #ffd966;
+      text-shadow: 0 0 20px rgba(245, 176, 66, 0.3);
+    }
+    .final-sub {
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: #b9c8ff;
+      margin-top: 6px;
+    }
+
+    /* Скрытие меню по умолчанию */
+    .menu-screen {
+      display: none;
+    }
+    .menu-screen.active {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+
+<div class="game-container" id="app">
+  <!-- Шапка -->
+  <div class="header">
+    <div class="score-box">🏆 <span id="scoreDisplay">0</span></div>
+    <div class="question-counter">
+      <span id="currentQuestionNum">1</span>/<span id="totalQuestionsNum">20</span>
+      <span class="theme-badge" id="themeBadge">🎵</span>
+    </div>
+  </div>
+
+  <!-- Меню выбора темы -->
+  <div class="menu-screen active" id="menuScreen">
+    <div class="menu-title">🎵 Музыкальная викторина</div>
+    <div class="menu-subtitle">Выберите тему:</div>
+    <div class="theme-buttons">
+      <button class="theme-btn pop" data-theme="pop">
+        <span class="icon">🎤</span> Поп-музыка
+      </button>
+      <button class="theme-btn rock" data-theme="rock">
+        <span class="icon">🎸</span> Рок-музыка
+      </button>
+    </div>
+  </div>
+
+  <!-- Игровой экран -->
+  <div class="game-screen" id="gameScreen">
+    <!-- Вопрос -->
+    <div class="question-text" id="questionText">Загрузка...</div>
+
+    <!-- Варианты ответов -->
+    <div class="options-grid" id="optionsGrid">
+      <button class="option-btn" data-index="0">—</button>
+      <button class="option-btn" data-index="1">—</button>
+      <button class="option-btn" data-index="2">—</button>
+      <button class="option-btn" data-index="3">—</button>
+    </div>
+
+    <!-- Сообщение -->
+    <div class="message-box" id="messageBox">🎵 Выберите один из вариантов</div>
+
+    <!-- Кнопки -->
+    <div class="action-row">
+      <button class="btn btn-success" id="nextBtn">▶ Следующий</button>
+      <button class="btn btn-secondary" id="menuBtn">📋 Меню</button>
+      <button class="btn btn-danger" id="restartBtn">🔄 Заново</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    "use strict";
+
+    // ======= БАЗА ВОПРОСОВ ПО ТЕМАМ =======
+    const QUESTIONS_BY_THEME = {
+      pop: [
+        { question: 'Кто исполнил песню "Billie Jean"?', answer: 'michael jackson' },
+        { question: 'Кто спел "I Will Always Love You"?', answer: 'whitney houston' },
+        { question: 'Кто исполнил "Thriller"?', answer: 'michael jackson' },
+        { question: 'Кто автор хита "Like a Rolling Stone"?', answer: 'bob dylan' },
+        { question: 'Кто спел "My Heart Will Go On"?', answer: 'celine dion' },
+        { question: 'Кто исполнил "Purple Rain"?', answer: 'prince' },
+        { question: 'Кто спел "Rolling in the Deep"?', answer: 'adele' },
+        { question: 'Песня "Lose Yourself" — исполнитель:', answer: 'eminem' },
+        { question: 'Кто написал "Yesterday"?', answer: 'the beatles' },
+        { question: 'Какой хит группы ABBA стал символом 70-х?', answer: 'waterloo' },
+        { question: 'Название песни, которую поет Адель о прошлом:', answer: 'someone like you' },
+        { question: 'Кто спел "Shape of You"?', answer: 'ed sheeran' },
+        { question: 'Кто исполнил "Bad Guy"?', answer: 'billie eilish' },
+        { question: 'Кто спел "Shallow" с Lady Gaga?', answer: 'bradley cooper' },
+        { question: 'Группа "BTS" — страна:', answer: 'south korea' },
+        { question: 'Кто спел "Wrecking Ball"?', answer: 'miley cyrus' },
+        { question: 'Кто исполнил "Roar"?', answer: 'katy perry' },
+        { question: 'Кто спел "Happy"?', answer: 'pharrell williams' },
+        { question: 'Кто автор "All of Me"?', answer: 'john legend' },
+        { question: 'Кто спел "Love Yourself"?', answer: 'justin bieber' },
+        { question: 'Кто исполнил "Havana"?', answer: 'camila cabello' },
+        { question: 'Кто спел "Girls Like You"?', answer: 'maroon 5' },
+        { question: 'Кто исполнил "Uptown Funk"?', answer: 'bruno mars' },
+        { question: 'Кто спел "Shake It Off"?', answer: 'taylor swift' },
+        { question: 'Кто автор "Blinding Lights"?', answer: 'the weeknd' }
+      ],
+      rock: [
+        { question: 'Название песни Queen, ставшей гимном рока:', answer: 'we will rock you' },
+        { question: 'Какой трек унесся в космос с Вояджером?', answer: 'johnny b goode' },
+        { question: 'Легендарная баллада от Guns N\' Roses:', answer: 'november rain' },
+        { question: 'Какую песню спел Фредди Меркьюри на Live Aid?', answer: 'bohemian rhapsody' },
+        { question: 'Песня "Smells Like Teen Spirit" — группа?', answer: 'nirvana' },
+        { question: 'Самый известный хит The Beatles — ?', answer: 'hey jude' },
+        { question: 'Песня "Stairway to Heaven" — группа?', answer: 'led zeppelin' },
+        { question: 'Кто автор "Imagine"?', answer: 'john lennon' },
+        { question: 'Группа, исполнившая "Zombie":', answer: 'the cranberries' },
+        { question: 'Песня "Wonderwall" — группа?', answer: 'oasis' },
+        { question: 'Кто написал "Hotel California"?', answer: 'eagles' },
+        { question: 'Самый известный трек Nirvana:', answer: 'smells like teen spirit' },
+        { question: 'Группа, подарившая нам "Another Brick in the Wall":', answer: 'pink floyd' },
+        { question: 'Группа "Queen" — вокалист:', answer: 'freddie mercury' },
+        { question: 'Кто автор "Stairway to Heaven"?', answer: 'led zeppelin' },
+        { question: 'Группа "AC/DC" — вокалист:', answer: 'brian johnson' },
+        { question: 'Песня "Livin\' on a Prayer" — группа:', answer: 'bon jovi' },
+        { question: 'Кто написал "Hotel California"?', answer: 'eagles' },
+        { question: 'Группа "The Rolling Stones" — вокалист:', answer: 'mick jagger' },
+        { question: 'Кто автор "Born to Run"?', answer: 'bruce springsteen' },
+        { question: 'Группа "Deep Purple" — хит:', answer: 'smoke on the water' },
+        { question: 'Кто исполнил "Sweet Child O\' Mine"?', answer: 'guns n roses' },
+        { question: 'Группа "The Who" — хит:', answer: 'my generation' },
+        { question: 'Кто автор "Johnny B. Goode"?', answer: 'chuck berry' },
+        { question: 'Группа "Metallica" — альбом:', answer: 'master of puppets' }
+      ]
+    };
+
+    // ======= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =======
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function getDistractors(correctAnswer, pool, count = 3) {
+      const allAnswers = pool.map(q => q.answer);
+      const uniqueAnswers = [...new Set(allAnswers)];
+      const filtered = uniqueAnswers.filter(a => a !== correctAnswer);
+      const shuffled = shuffleArray([...filtered]);
+      return shuffled.slice(0, count);
+    }
+
+    function normalize(str) {
+      return str.trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    // ======= СОСТОЯНИЕ =======
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let isAnswered = false;
+    let gameOver = false;
+    let currentTheme = 'pop';
+
+    // DOM
+    const menuScreen = document.getElementById('menuScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const questionEl = document.getElementById('questionText');
+    const optionsGrid = document.getElementById('optionsGrid');
+    const optionBtns = optionsGrid.querySelectorAll('.option-btn');
+    const messageBox = document.getElementById('messageBox');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const currentNumEl = document.getElementById('currentQuestionNum');
+    const totalNumEl = document.getElementById('totalQuestionsNum');
+    const nextBtn = document.getElementById('nextBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const menuBtn = document.getElementById('menuBtn');
+    const themeBadge = document.getElementById('themeBadge');
+
+    const themeNames = {
+      pop: '🎤 Поп',
+      rock: '🎸 Рок'
+    };
+
+    // ======= ОТОБРАЖЕНИЕ ВОПРОСА =======
+    function renderQuestion() {
+      if (gameOver) {
+        questionEl.innerHTML = `
+          <div class="final-result">🎵 Викторина завершена!</div>
+          <div class="final-sub">Правильных ответов: ${score} из ${currentQuestions.length}</div>
+        `;
+        messageBox.textContent = `🏆 Ваш результат: ${score} / ${currentQuestions.length}`;
+        messageBox.className = 'message-box';
+        optionBtns.forEach(btn => btn.disabled = true);
+        nextBtn.style.display = 'none';
+        currentNumEl.textContent = '🎯';
+        return;
+      }
+
+      if (currentQuestions.length === 0) return;
+
+      const q = currentQuestions[currentIndex];
+      questionEl.textContent = q.question;
+      currentNumEl.textContent = currentIndex + 1;
+      totalNumEl.textContent = currentQuestions.length;
+
+      // Генерируем варианты
+      const correct = q.answer;
+      let distractors = getDistractors(correct, currentQuestions, 3);
+      while (distractors.length < 3) {
+        distractors.push('неизвестно');
+      }
+      let options = shuffleArray([correct, ...distractors]);
+
+      optionBtns.forEach((btn, idx) => {
+        btn.textContent = options[idx] || '—';
+        btn.dataset.answer = options[idx] || '';
+        btn.className = 'option-btn';
+        btn.disabled = false;
+        btn.style.display = 'flex';
+      });
+
+      isAnswered = false;
+      nextBtn.style.display = 'none';
+      messageBox.textContent = '🎵 Выберите один из вариантов';
+      messageBox.className = 'message-box';
+      scoreDisplay.textContent = score;
+    }
+
+    // ======= ОБРАБОТЧИК ВЫБОРА ОТВЕТА =======
+    function handleOptionClick(e) {
+      const btn = e.currentTarget;
+      if (isAnswered || gameOver || btn.disabled) return;
+
+      const selected = btn.dataset.answer;
+      const correct = currentQuestions[currentIndex].answer;
+      const isCorrect = normalize(selected) === normalize(correct);
+
+      optionBtns.forEach(b => b.disabled = true);
+      isAnswered = true;
+
+      optionBtns.forEach(b => {
+        const val = b.dataset.answer;
+        if (normalize(val) === normalize(correct)) {
+          b.classList.add('correct');
+        } else if (b === btn && !isCorrect) {
+          b.classList.add('wrong');
+        }
+      });
+
+      if (isCorrect) {
+        score++;
+        scoreDisplay.textContent = score;
+        messageBox.textContent = '✅ Верно! +1 балл';
+        messageBox.className = 'message-box correct';
+      } else {
+        messageBox.textContent = `❌ Неверно. Правильный ответ: "${correct}"`;
+        messageBox.className = 'message-box wrong';
+      }
+
+      nextBtn.style.display = 'inline-flex';
+      if (currentIndex === currentQuestions.length - 1) {
+        nextBtn.textContent = '🏁 Завершить';
+      } else {
+        nextBtn.textContent = '▶ Следующий';
+      }
+    }
+
+    // ======= СЛЕДУЮЩИЙ ВОПРОС / ЗАВЕРШЕНИЕ =======
+    function goToNext() {
+      if (gameOver) return;
+
+      if (currentIndex === currentQuestions.length - 1) {
+        gameOver = true;
+        renderQuestion();
+        nextBtn.style.display = 'none';
+        return;
+      }
+
+      currentIndex++;
+      renderQuestion();
+    }
+
+    // ======= ЗАПУСК ИГРЫ С ТЕМОЙ =======
+    function startGame(theme) {
+      currentTheme = theme;
+      const pool = QUESTIONS_BY_THEME[theme] || QUESTIONS_BY_THEME.pop;
+      const shuffledPool = shuffleArray([...pool]);
+      currentQuestions = shuffledPool.slice(0, 20);
+
+      currentIndex = 0;
+      score = 0;
+      isAnswered = false;
+      gameOver = false;
+
+      optionBtns.forEach(btn => {
+        btn.disabled = false;
+        btn.className = 'option-btn';
+      });
+
+      nextBtn.style.display = 'none';
+      nextBtn.textContent = '▶ Следующий';
+      messageBox.className = 'message-box';
+      messageBox.textContent = `🎵 Тема: ${themeNames[theme]}`;
+
+      themeBadge.textContent = themeNames[theme];
+
+      menuScreen.classList.remove('active');
+      menuScreen.style.display = 'none';
+      gameScreen.classList.add('active');
+      gameScreen.style.display = 'block';
+
+      renderQuestion();
+    }
+
+    // ======= ВОЗВРАТ В МЕНЮ =======
+    function goToMenu() {
+      gameScreen.classList.remove('active');
+      gameScreen.style.display = 'none';
+      menuScreen.style.display = 'flex';
+      menuScreen.classList.add('active');
+    }
+
+    // ======= ПЕРЕЗАПУСК ТЕКУЩЕЙ ТЕМЫ =======
+    function restartGame() {
+      startGame(currentTheme);
+    }
+
+    // ======= ИНИЦИАЛИЗАЦИЯ =======
+    function initGame() {
+      optionBtns.forEach(btn => {
+        btn.addEventListener('click', handleOptionClick);
+      });
+
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const theme = this.dataset.theme;
+          startGame(theme);
+        });
+      });
+
+      nextBtn.addEventListener('click', goToNext);
+      restartBtn.addEventListener('click', restartGame);
+      menuBtn.addEventListener('click', goToMenu);
+
+      menuScreen.style.display = 'flex';
+      menuScreen.classList.add('active');
+      gameScreen.style.display = 'none';
+      gameScreen.classList.remove('active');
+    }
+
+    initGame();
+  })();
+</script>
+</body>
+</html>
