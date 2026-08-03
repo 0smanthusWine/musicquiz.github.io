@@ -50,6 +50,19 @@
       gap: 8px;
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .score-box {
       background: #0d121f;
       padding: 6px 16px;
@@ -84,6 +97,52 @@
       font-weight: 600;
       color: #b9c8ff;
       border: 1px solid #3a4568;
+    }
+
+    /* ===== Кнопка управления музыкой ===== */
+    .music-btn {
+      background: #1a2135;
+      border: 2px solid #3a4568;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 0 #0a0e1a;
+      color: #eef3ff;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      padding: 0;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .music-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #0a0e1a;
+    }
+
+    .music-btn:hover:not(:active) {
+      background: #26305a;
+      border-color: #5a6a9a;
+    }
+
+    /* Стиль для выключенной музыки */
+    .music-btn.muted {
+      background: #1a1a2a;
+      border-color: #4a3a4a;
+      opacity: 0.5;
+      color: #888899;
+      box-shadow: 0 4px 0 #0a0a1a;
+    }
+
+    .music-btn.muted:hover:not(:active) {
+      background: #2a2a3a;
+      border-color: #5a4a5a;
     }
 
     /* ===== Меню выбора темы ===== */
@@ -183,7 +242,7 @@
       padding: 0 4px;
     }
 
-    /* ===== Варианты ответов - адаптивная сетка ===== */
+    /* ===== Варианты ответов ===== */
     .options-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -352,7 +411,6 @@
     }
 
     /* ===== АДАПТИВ ДЛЯ МОБИЛЬНЫХ ===== */
-    /* Планшеты и маленькие экраны */
     @media (max-width: 600px) {
       .game-container {
         padding: 20px 14px 24px;
@@ -381,6 +439,11 @@
         font-size: 0.95rem;
         min-width: 70px;
         flex: 1 0 70px;
+      }
+      .music-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
       }
       .score-box {
         font-size: 1rem;
@@ -431,7 +494,6 @@
         margin: 10px 0 12px;
       }
 
-      /* ★★★ ВАРИАНТЫ ОТВЕТОВ — ВЕРТИКАЛЬНО ★★★ */
       .options-grid {
         grid-template-columns: 1fr;
         gap: 8px;
@@ -460,6 +522,12 @@
         border-radius: 50px;
       }
 
+      .music-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 1.0rem;
+      }
+
       .score-box {
         font-size: 0.9rem;
         padding: 4px 12px;
@@ -484,7 +552,6 @@
         gap: 8px;
       }
 
-      /* финал на телефоне */
       .final-result {
         font-size: 1.5rem;
       }
@@ -522,6 +589,11 @@
         min-width: 50px;
         flex: 1 0 50px;
       }
+      .music-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 0.9rem;
+      }
       .score-box {
         font-size: 0.8rem;
         padding: 4px 10px;
@@ -555,7 +627,6 @@
       margin-top: 6px;
     }
 
-    /* Скрытие меню по умолчанию */
     .menu-screen {
       display: none;
     }
@@ -569,10 +640,15 @@
 <div class="game-container" id="app">
   <!-- Шапка -->
   <div class="header">
-    <div class="score-box">🏆 <span id="scoreDisplay">0</span></div>
-    <div class="question-counter">
-      <span id="currentQuestionNum">1</span>/<span id="totalQuestionsNum">20</span>
-      <span class="theme-badge" id="themeBadge">🎵</span>
+    <div class="header-left">
+      <div class="score-box">🏆 <span id="scoreDisplay">0</span></div>
+      <button class="music-btn" id="musicBtn" title="Включить/выключить музыку">🔇</button>
+    </div>
+    <div class="header-right">
+      <div class="question-counter">
+        <span id="currentQuestionNum">1</span>/<span id="totalQuestionsNum">20</span>
+        <span class="theme-badge" id="themeBadge">🎵</span>
+      </div>
     </div>
   </div>
 
@@ -677,6 +753,138 @@
       ]
     };
 
+    // ======= ФОНОВАЯ МУЗЫКА (генерация через Web Audio) =======
+    let audioContext = null;
+    let musicNodes = [];
+    let isMusicPlaying = false;
+    let musicGainNode = null;
+    let musicOscillators = [];
+    let musicTimeout = null;
+
+    // Создаем простую приятную мелодию
+    function createBackgroundMusic() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      // Если музыка уже играет, останавливаем
+      stopMusic();
+
+      musicGainNode = audioContext.createGain();
+      musicGainNode.gain.value = 0.15;
+      musicGainNode.connect(audioContext.destination);
+
+      // Ноты для мелодии (частота, длительность)
+      const notes = [
+        { freq: 523.25, dur: 0.4 }, // C5
+        { freq: 587.33, dur: 0.3 }, // D5
+        { freq: 659.25, dur: 0.4 }, // E5
+        { freq: 783.99, dur: 0.5 }, // G5
+        { freq: 659.25, dur: 0.3 }, // E5
+        { freq: 587.33, dur: 0.4 }, // D5
+        { freq: 523.25, dur: 0.6 }, // C5
+        { freq: 659.25, dur: 0.3 }, // E5
+        { freq: 783.99, dur: 0.4 }, // G5
+        { freq: 880.00, dur: 0.5 }, // A5
+        { freq: 783.99, dur: 0.3 }, // G5
+        { freq: 659.25, dur: 0.4 }, // E5
+        { freq: 587.33, dur: 0.5 }, // D5
+        { freq: 659.25, dur: 0.3 }, // E5
+        { freq: 783.99, dur: 0.6 }, // G5
+        { freq: 880.00, dur: 0.4 }, // A5
+        { freq: 987.77, dur: 0.5 }, // B5
+        { freq: 880.00, dur: 0.3 }, // A5
+        { freq: 783.99, dur: 0.4 }, // G5
+        { freq: 659.25, dur: 0.6 }, // E5
+      ];
+
+      let time = audioContext.currentTime + 0.1;
+
+      notes.forEach((note) => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.value = note.freq;
+
+        gain.gain.setValueAtTime(0.12, time);
+        gain.gain.exponentialRampToValueAtTime(0.01, time + note.dur);
+
+        osc.connect(gain);
+        gain.connect(musicGainNode);
+
+        osc.start(time);
+        osc.stop(time + note.dur);
+
+        musicOscillators.push({ osc, gain, time, dur: note.dur });
+
+        time += note.dur + 0.15;
+      });
+
+      // Пауза и повтор
+      const totalDuration = time - audioContext.currentTime + 0.5;
+      if (musicTimeout) clearTimeout(musicTimeout);
+      musicTimeout = setTimeout(() => {
+        if (isMusicPlaying) {
+          createBackgroundMusic();
+        }
+      }, totalDuration * 1000);
+    }
+
+    function startMusic() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+      isMusicPlaying = true;
+      createBackgroundMusic();
+      updateMusicButton(true);
+    }
+
+    function stopMusic() {
+      isMusicPlaying = false;
+      if (musicTimeout) {
+        clearTimeout(musicTimeout);
+        musicTimeout = null;
+      }
+      musicOscillators.forEach(({ osc, gain }) => {
+        try {
+          osc.stop();
+          osc.disconnect();
+          gain.disconnect();
+        } catch (e) {}
+      });
+      musicOscillators = [];
+      if (musicGainNode) {
+        try {
+          musicGainNode.disconnect();
+        } catch (e) {}
+        musicGainNode = null;
+      }
+      updateMusicButton(false);
+    }
+
+    function toggleMusic() {
+      if (isMusicPlaying) {
+        stopMusic();
+      } else {
+        startMusic();
+      }
+    }
+
+    function updateMusicButton(playing) {
+      const musicBtn = document.getElementById('musicBtn');
+      if (playing) {
+        musicBtn.textContent = '🔊';
+        musicBtn.classList.remove('muted');
+      } else {
+        musicBtn.textContent = '🔇';
+        musicBtn.classList.add('muted');
+      }
+    }
+
     // ======= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =======
     function shuffleArray(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -720,6 +928,7 @@
     const restartBtn = document.getElementById('restartBtn');
     const menuBtn = document.getElementById('menuBtn');
     const themeBadge = document.getElementById('themeBadge');
+    const musicBtn = document.getElementById('musicBtn');
 
     const themeNames = {
       pop: '🎤 Поп',
@@ -748,7 +957,6 @@
       currentNumEl.textContent = currentIndex + 1;
       totalNumEl.textContent = currentQuestions.length;
 
-      // Генерируем варианты
       const correct = q.answer;
       let distractors = getDistractors(correct, currentQuestions, 3);
       while (distractors.length < 3) {
@@ -855,6 +1063,11 @@
       gameScreen.style.display = 'block';
 
       renderQuestion();
+
+      // Автозапуск музыки при выборе темы (если ещё не играет)
+      if (!isMusicPlaying) {
+        startMusic();
+      }
     }
 
     // ======= ВОЗВРАТ В МЕНЮ =======
@@ -886,11 +1099,15 @@
       nextBtn.addEventListener('click', goToNext);
       restartBtn.addEventListener('click', restartGame);
       menuBtn.addEventListener('click', goToMenu);
+      musicBtn.addEventListener('click', toggleMusic);
 
       menuScreen.style.display = 'flex';
       menuScreen.classList.add('active');
       gameScreen.style.display = 'none';
       gameScreen.classList.remove('active');
+
+      // Музыка по умолчанию выключена
+      updateMusicButton(false);
     }
 
     initGame();
