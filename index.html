@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -25,7 +24,6 @@
       color: #f0f4ff;
     }
 
-    /* ===== Игровой контейнер ===== */
     .game-container {
       background: rgba(22, 28, 46, 0.85);
       backdrop-filter: blur(4px);
@@ -40,7 +38,6 @@
       position: relative;
     }
 
-    /* ===== Шапка ===== */
     .header {
       display: flex;
       justify-content: space-between;
@@ -101,7 +98,6 @@
       border: 1px solid #3a4568;
     }
 
-    /* ===== Кнопка управления музыкой ===== */
     .music-btn {
       background: #1a2135;
       border: 2px solid #3a4568;
@@ -146,7 +142,6 @@
       border-color: #5a4a5a;
     }
 
-    /* ===== Меню выбора темы ===== */
     .menu-screen {
       display: flex;
       flex-direction: column;
@@ -230,7 +225,6 @@
       border-color: #e07486;
     }
 
-    /* ===== Вопрос с картинкой ===== */
     .question-wrapper {
       display: flex;
       flex-direction: column;
@@ -260,7 +254,6 @@
       margin: 0;
     }
 
-    /* ===== Варианты ответов ===== */
     .options-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -320,7 +313,6 @@
       box-shadow: 0 0 20px rgba(196, 75, 92, 0.3);
     }
 
-    /* ===== Сообщение ===== */
     .message-box {
       background: #121926;
       padding: 12px 14px;
@@ -350,7 +342,6 @@
       color: #fcc8d2;
     }
 
-    /* ===== КНОПКИ УПРАВЛЕНИЯ ===== */
     .action-area {
       display: flex;
       flex-direction: column;
@@ -457,7 +448,6 @@
       display: flex;
     }
 
-    /* ===== МОДАЛЬНОЕ ОКНО ===== */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -544,7 +534,6 @@
       box-shadow: 0 6px 0 #2a3a5a;
     }
 
-    /* ===== АДАПТИВ ===== */
     @media (max-width: 600px) {
       .game-container {
         padding: 20px 14px 24px;
@@ -826,7 +815,6 @@
 <body>
 
 <div class="game-container" id="app">
-  <!-- Шапка -->
   <div class="header">
     <div class="header-left">
       <div class="score-box">🏆 <span id="scoreDisplay">0</span></div>
@@ -840,7 +828,6 @@
     </div>
   </div>
 
-  <!-- Меню выбора темы -->
   <div class="menu-screen active" id="menuScreen">
     <div class="menu-title">🎵 Музыкальная викторина</div>
     <div class="menu-subtitle">Выберите тему:</div>
@@ -854,15 +841,12 @@
     </div>
   </div>
 
-  <!-- Игровой экран -->
   <div class="game-screen" id="gameScreen">
-    <!-- Вопрос с картинкой -->
     <div class="question-wrapper">
       <img class="question-image" id="questionImage" src="" alt="Изображение к вопросу" style="display:none;">
       <div class="question-text" id="questionText">Загрузка...</div>
     </div>
 
-    <!-- Варианты ответов -->
     <div class="options-grid" id="optionsGrid">
       <button class="option-btn" data-index="0">—</button>
       <button class="option-btn" data-index="1">—</button>
@@ -870,10 +854,8 @@
       <button class="option-btn" data-index="3">—</button>
     </div>
 
-    <!-- Сообщение -->
     <div class="message-box" id="messageBox">🎵 Выберите один из вариантов</div>
 
-    <!-- ОБЛАСТЬ С КНОПКАМИ -->
     <div class="action-area">
       <div class="next-row">
         <button class="btn btn-success" id="nextBtn">▶ Следующий</button>
@@ -885,7 +867,6 @@
     </div>
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-box">
       <div class="modal-icon">⚠️</div>
@@ -895,8 +876,8 @@
         Вы уверены, что хотите покинуть игру?
       </div>
       <div class="modal-buttons">
-        <button class="btn btn-success" id="modalContinueBtn">🎮 Продолжить</button>
-        <button class="btn btn-warning" id="modalConfirmBtn">📋 Выйти в меню</button>
+        <button class="btn btn-success" id="modalContinueBtn">Продолжить</button>
+        <button class="btn btn-warning" id="modalConfirmBtn">Выйти в меню</button>
       </div>
     </div>
   </div>
@@ -907,109 +888,255 @@
     "use strict";
 
     // ======= БАЗА ВОПРОСОВ С КАРТИНКАМИ =======
-    // Используем сервис picsum.photos для демонстрационных картинок
-    // В реальном проекте вы можете заменить на свои URL
-
+    // Для демонстрации используются ссылки на picsum.photos
+    // Вы можете заменить на свои локальные пути: 'img/nazvanie.jpg'
+    
     const QUESTIONS_BY_THEME = {
       pop: [
-        // Вопросы с картинками
+        // ===== ИСПОЛНИТЕЛИ (artist) с картинками =====
         { 
-          question: 'Кто исполнил этот хит?',
-          image: 'https://picsum.photos/seed/michael/400/200',
-          answer: 'michael jackson'
+          question: 'Кто этот король поп-музыки?',
+          image: 'img/michaeljackson.jpg',
+          answer: 'michael jackson',
+          category: 'artist'
         },
         { 
           question: 'Узнайте певицу по фото:',
-          image: 'https://picsum.photos/seed/whitney/400/200',
-          answer: 'whitney houston'
+          image: 'img/whitneyhouston.jpg',
+          answer: 'whitney houston',
+          category: 'artist'
         },
         { 
-          question: 'Как зовут этого исполнителя?',
-          image: 'https://picsum.photos/seed/prince/400/200',
-          answer: 'prince'
+          question: 'Как зовут этого музыканта?',
+          image: 'img/Prince-W2A-copyright-The-Prince-Estate-photo-credit-Mike-Ruiz.jpg',
+          answer: 'prince',
+          category: 'artist'
         },
         { 
-          question: 'Кто эта звезда поп-музыки?',
-          image: 'https://picsum.photos/seed/taylor/400/200',
-          answer: 'taylor swift'
+          question: 'Кто эта поп-звезда?',
+          image: 'img/taylor-swift.jpg',
+          answer: 'taylor swift',
+          category: 'artist'
         },
         { 
           question: 'Узнайте артиста:',
-          image: 'https://picsum.photos/seed/bruno/400/200',
-          answer: 'bruno mars'
+          image: 'img/brunomars.jpg',
+          answer: 'bruno mars',
+          category: 'artist'
         },
-        // Обычные вопросы
-        { question: 'Кто спел "I Will Always Love You"?', answer: 'whitney houston' },
-        { question: 'Кто исполнил "Thriller"?', answer: 'michael jackson' },
-        { question: 'Кто автор хита "Like a Rolling Stone"?', answer: 'bob dylan' },
-        { question: 'Кто спел "My Heart Will Go On"?', answer: 'celine dion' },
-        { question: 'Кто спел "Rolling in the Deep"?', answer: 'adele' },
-        { question: 'Песня "Lose Yourself" — исполнитель:', answer: 'eminem' },
-        { question: 'Кто написал "Yesterday"?', answer: 'the beatles' },
-        { question: 'Какой хит группы ABBA стал символом 70-х?', answer: 'waterloo' },
-        { question: 'Название песни, которую поет Адель о прошлом:', answer: 'someone like you' },
-        { question: 'Кто спел "Shape of You"?', answer: 'ed sheeran' },
-        { question: 'Кто исполнил "Bad Guy"?', answer: 'billie eilish' },
-        { question: 'Кто спел "Shallow" с Lady Gaga?', answer: 'bradley cooper' },
-        { question: 'Кто спел "Wrecking Ball"?', answer: 'miley cyrus' },
-        { question: 'Кто исполнил "Roar"?', answer: 'katy perry' },
-        { question: 'Кто спел "Happy"?', answer: 'pharrell williams' },
-        { question: 'Кто автор "All of Me"?', answer: 'john legend' },
-        { question: 'Кто спел "Love Yourself"?', answer: 'justin bieber' },
-        { question: 'Кто исполнил "Havana"?', answer: 'camila cabello' },
-        { question: 'Кто спел "Girls Like You"?', answer: 'maroon 5' },
-        { question: 'Кто спел "Shake It Off"?', answer: 'taylor swift' },
-        { question: 'Кто автор "Blinding Lights"?', answer: 'the weeknd' }
+        { 
+          question: 'Кто эта певица с мощным голосом?',
+          image: 'img/adele.png',
+          answer: 'adele',
+          category: 'artist'
+        },
+        { 
+          question: 'Узнайте рэпера:',
+          image: 'img/eminem.jpg',
+          answer: 'eminem',
+          category: 'artist'
+        },
+        // Обычные вопросы про исполнителей
+        { question: 'Кто исполнил "Billie Jean"?', answer: 'michael jackson', category: 'artist' },
+        { question: 'Кто спел "I Will Always Love You"?', answer: 'whitney houston', category: 'artist' },
+        { question: 'Кто спел "My Heart Will Go On"?', answer: 'celine dion', category: 'artist' },
+        { question: 'Кто исполнил "Purple Rain"?', answer: 'prince', category: 'artist' },
+        { question: 'Кто спел "Rolling in the Deep"?', answer: 'adele', category: 'artist' },
+        { question: 'Кто исполнил "Lose Yourself"?', answer: 'eminem', category: 'artist' },
+        { question: 'Кто написал "Yesterday"?', answer: 'paul mccartney', category: 'artist' },
+        { question: 'Кто спел "Shape of You"?', answer: 'ed sheeran', category: 'artist' },
+        { question: 'Кто исполнил "Bad Guy"?', answer: 'billie eilish', category: 'artist' },
+        { question: 'Кто спел "Shallow"?', answer: 'lady gaga', category: 'artist' },
+        { question: 'Кто спел "Wrecking Ball"?', answer: 'miley cyrus', category: 'artist' },
+        { question: 'Кто исполнил "Roar"?', answer: 'katy perry', category: 'artist' },
+        { question: 'Кто спел "Happy"?', answer: 'pharrell williams', category: 'artist' },
+        { question: 'Кто автор "All of Me"?', answer: 'john legend', category: 'artist' },
+        { question: 'Кто спел "Love Yourself"?', answer: 'justin bieber', category: 'artist' },
+        { question: 'Кто исполнил "Havana"?', answer: 'camila cabello', category: 'artist' },
+        { question: 'Кто спел "Shake It Off"?', answer: 'taylor swift', category: 'artist' },
+        { question: 'Кто автор "Blinding Lights"?', answer: 'the weeknd', category: 'artist' },
+        
+        // ===== НАЗВАНИЯ ПЕСЕН (song) с картинками =====
+        { 
+          question: 'Как называется эта песня ABBA?',
+          image: 'https://picsum.photos/seed/abba/400/200',
+          answer: 'waterloo',
+          category: 'song'
+        },
+        { 
+          question: 'Узнайте хит Адель:',
+          image: 'https://picsum.photos/seed/adele2/400/200',
+          answer: 'someone like you',
+          category: 'song'
+        },
+        // Обычные вопросы про песни
+        { question: 'Какой хит группы ABBA стал символом 70-х?', answer: 'waterloo', category: 'song' },
+        { question: 'Название песни Адель о прошлом:', answer: 'someone like you', category: 'song' },
+        { question: 'Песня Майкла Джексона с клипом-короткометражкой:', answer: 'thriller', category: 'song' },
+        { question: 'Песня Уитни Хьюстон из фильма "Телохранитель":', answer: 'i will always love you', category: 'song' },
+        { question: 'Гимн ЛГБТ-сообщества от Леди Гаги:', answer: 'born this way', category: 'song' },
+        { question: 'Песня, прославившая Билли Айлиш:', answer: 'bad guy', category: 'song' },
+        { question: 'Трек, за который Адель получила "Грэмми":', answer: 'rolling in the deep', category: 'song' },
+        { question: 'Песня из фильма "Титаник":', answer: 'my heart will go on', category: 'song' },
+        { question: 'Трек Джастина Бибера из альбома "Purpose":', answer: 'love yourself', category: 'song' },
+        { question: 'Песня Тейлор Свифт о расставании:', answer: 'we are never ever getting back together', category: 'song' },
+        { question: 'Хит Бруно Марса о любви:', answer: 'just the way you are', category: 'song' },
+        { question: 'Песня Эда Ширана для свадеб:', answer: 'thinking out loud', category: 'song' },
+        
+        // ===== ГРУППЫ (band) с картинками =====
+        { 
+          question: 'Узнайте эту группу:',
+          image: 'img/abba.jpeg',
+          answer: 'abba',
+          category: 'band'
+        },
+        { 
+          question: 'Кто эти музыканты?',
+          image: 'img/Beatles.jpg',
+          answer: 'the beatles',
+          category: 'band'
+        },
+        // Обычные вопросы про группы
+        { question: 'Кто спел "Girls Like You"?', answer: 'maroon 5', category: 'band' },
+        { question: 'Шведская группа, подарившая нам "Dancing Queen":', answer: 'abba', category: 'band' },
+        { question: 'Британская группа с Полом Маккартни:', answer: 'the beatles', category: 'band' },
+        { question: 'Ирландская группа, спецщая "Zombie":', answer: 'the cranberries', category: 'band' },
+        { question: 'Американская группа с Стивеном Тайлером:', answer: 'aerosmith', category: 'band' },
+        { question: 'Поп-группа из Великобритании:', answer: 'take that', category: 'band' },
+        { question: 'Группа Джастина Тимберлейка:', answer: 'nsync', category: 'band' },
+        { question: 'Бойз-бенд, спецщий "I Want It That Way":', answer: 'backstreet boys', category: 'band' },
+        { question: 'Группа с песней "Bye Bye Bye":', answer: 'nsync', category: 'band' },
+        { question: 'Поп-группа "Spice Girls":', answer: 'spice girls', category: 'band' },
+        { question: 'Австралийская группа "Kylie Minogue"?', answer: 'the seekers', category: 'band' },
       ],
       rock: [
-        // Вопросы с картинками
+        // ===== ИСПОЛНИТЕЛИ (artist) с картинками =====
         { 
-          question: 'Узнайте легендарную группу:',
-          image: 'img/Queen-Bohemian-Rhapsody.jpg',
-          answer: 'queen'
+          question: 'Кто этот легендарный вокалист?',
+          image: 'img/freddie.jpg',
+          answer: 'Freddie Mercury',
+          category: 'artist'
+        },
+        { 
+          question: 'Узнайте гитариста:',
+          image: 'https://avatars.mds.yandex.net/i?id=e228a5f8bec33b60073bde55b7f3cdab_l-5668624-images-thumbs&n=13',
+          answer: 'Jimi Hendrix',
+          category: 'artist'
         },
         { 
           question: 'Кто этот рок-музыкант?',
-          image: 'https://avatars.yandex.net/get-music-content/2390047/895b5df0.p.3120/m1000x1000',
-          answer: 'freddie mercury'
+          image: 'img/kurt.jpg',
+          answer: 'Kurt Cobain',
+          category: 'artist'
+        },
+        { 
+          question: 'Узнайте фронтмена:',
+          image: 'img/axl.jpg',
+          answer: 'Axl Rose',
+          category: 'artist'
+        },
+        { 
+          question: 'Кто этот гитарный гений?',
+          image: 'img/jimmypage.jpg',
+          answer: 'Jimmy Page',
+          category: 'artist'
+        },
+        // Обычные вопросы про исполнителей
+        { question: 'Кто был вокалистом Queen?', answer: 'Freddie Mercury', category: 'artist' },
+        { question: 'Легендарный гитарист Джими:', answer: 'Jimi Hendrix', category: 'artist' },
+        { question: 'Кто автор "Imagine"?', answer: 'John Lennon', category: 'artist' },
+        { question: 'Кто спел "Born to Run"?', answer: 'Bruce Springsteen', category: 'artist' },
+        { question: 'Кто автор "Johnny B. Goode"?', answer: 'Chuck Berry', category: 'artist' },
+        { question: 'Вокалист Guns N\' Roses:', answer: 'Axl Rose', category: 'artist' },
+        { question: 'Гитарист Led Zeppelin:', answer: 'Jimmy Page', category: 'artist' },
+        { question: 'Кто был вокалистом Nirvana?', answer: 'Kurt Cobain', category: 'artist' },
+        { question: 'Барабанщик The Beatles:', answer: 'Ringo Starr', category: 'artist' },
+        { question: 'Вокалист The Rolling Stones:', answer: 'Mick Jagger', category: 'artist' },
+        { question: 'Гитарист Pink Floyd:', answer: 'David Gilmour', category: 'artist' },
+        { question: 'Автор "Hotel California":', answer: 'Don Henley', category: 'artist' },
+        { question: 'Вокалист AC/DC:', answer: 'Brian Johnson', category: 'artist' },
+        
+        // ===== ГРУППЫ (band) с картинками =====
+        { 
+          question: 'Узнайте легендарную группу:',
+          image: 'img/Queen-Bohemian-Rhapsody.jpg',
+          answer: 'queen',
+          category: 'band'
         },
         { 
           question: 'Узнайте группу по фото:',
-          image: 'https://tophit.ru/_next/image?url=https%3A%2F%2Ff.tophit.com%2Fget.php%3Fw%3D1080%26h%3D1080%26id%3D8566&w=640&q=75',
-          answer: 'nirvana'
-        },
-        { 
-          question: 'Кто этот гитарист?',
-          image: 'https://avatars.mds.yandex.net/i?id=e228a5f8bec33b60073bde55b7f3cdab_l-5668624-images-thumbs&n=13',
-          answer: 'jimi hendrix'
+          image: 'img/nirvana.jpg',
+          answer: 'nirvana',
+          category: 'band'
         },
         { 
           question: 'Узнайте рок-группу:',
-          image: 'https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/2529ffe2-5030-43e6-9925-3a281cf039b4/1920x',
-          answer: 'led zeppelin'
+          image: 'img/ledzeppelin.jpg',
+          answer: 'led zeppelin',
+          category: 'band'
         },
-        // Обычные вопросы
-        { question: 'Название песни Queen, ставшей гимном рока:', answer: 'we will rock you' },
-        { question: 'Какой трек унесся в космос с Вояджером?', answer: 'johnny b goode' },
-        { question: 'Легендарная баллада от Guns N\' Roses:', answer: 'november rain' },
-        { question: 'Какую песню спел Фредди Меркьюри на Live Aid?', answer: 'bohemian rhapsody' },
-        { question: 'Песня "Smells Like Teen Spirit" — группа?', answer: 'nirvana' },
-        { question: 'Самый известный хит The Beatles — ?', answer: 'hey jude' },
-        { question: 'Песня "Stairway to Heaven" — группа?', answer: 'led zeppelin' },
-        { question: 'Кто автор "Imagine"?', answer: 'john lennon' },
-        { question: 'Группа, исполнившая "Zombie":', answer: 'the cranberries' },
-        { question: 'Песня "Wonderwall" — группа?', answer: 'oasis' },
-        { question: 'Кто написал "Hotel California"?', answer: 'eagles' },
-        { question: 'Группа, подарившая нам "Another Brick in the Wall":', answer: 'pink floyd' },
-        { question: 'Группа "AC/DC" — вокалист:', answer: 'brian johnson' },
-        { question: 'Песня "Livin\' on a Prayer" — группа:', answer: 'bon jovi' },
-        { question: 'Группа "The Rolling Stones" — вокалист:', answer: 'mick jagger' },
-        { question: 'Кто автор "Born to Run"?', answer: 'bruce springsteen' },
-        { question: 'Группа "Deep Purple" — хит:', answer: 'smoke on the water' },
-        { question: 'Кто исполнил "Sweet Child O\' Mine"?', answer: 'guns n roses' },
-        { question: 'Группа "The Who" — хит:', answer: 'my generation' },
-        { question: 'Кто автор "Johnny B. Goode"?', answer: 'chuck berry' },
-        { question: 'Группа "Metallica" — альбом:', answer: 'master of puppets' }
+        { 
+          question: 'Кто эти рок-легенды?',
+          image: 'img/Pink_Floyd.jpg',
+          answer: 'pink floyd',
+          category: 'band'
+        },
+        { 
+          question: 'Узнайте группу:',
+          image: 'img/the rolling stones.jpg',
+          answer: 'the rolling stones',
+          category: 'band'
+        },
+        // Обычные вопросы про группы
+        { question: 'Группа Курта Кобейна:', answer: 'nirvana', category: 'band' },
+        { question: 'Рок-группа с "Stairway to Heaven":', answer: 'led zeppelin', category: 'band' },
+        { question: 'Группа "Another Brick in the Wall":', answer: 'pink floyd', category: 'band' },
+        { question: 'Кто исполнил "Sweet Child O\' Mine"?', answer: 'guns n roses', category: 'band' },
+        { question: 'Группа с Миком Джаггером:', answer: 'the rolling stones', category: 'band' },
+        { question: 'Британская группа с Полом Маккартни:', answer: 'the beatles', category: 'band' },
+        { question: 'Группа "Smoke on the Water":', answer: 'deep purple', category: 'band' },
+        { question: 'Кто спел "Livin\' on a Prayer"?', answer: 'bon jovi', category: 'band' },
+        { question: 'Группа "My Generation":', answer: 'the who', category: 'band' },
+        { question: 'Группа "Master of Puppets":', answer: 'metallica', category: 'band' },
+        { question: 'Кто написал "Hotel California"?', answer: 'eagles', category: 'band' },
+        { question: 'Группа "Zombie":', answer: 'the cranberries', category: 'band' },
+        { question: 'Кто спел "Wonderwall"?', answer: 'oasis', category: 'band' },
+        { question: 'Группа "Back in Black":', answer: 'AC/DC', category: 'band' },
+        { question: 'Кто исполнил "November Rain"?', answer: 'guns n roses', category: 'band' },
+        { question: 'Группа "The Show Must Go On":', answer: 'queen', category: 'band' },
+        { question: 'Кто спел "House of the Rising Sun"?', answer: 'the animals', category: 'band' },
+        { question: 'Группа "Light My Fire":', answer: 'the doors', category: 'band' },
+        { question: 'Кто исполнил "Whole Lotta Love"?', answer: 'led zeppelin', category: 'band' },
+        
+        // ===== НАЗВАНИЯ ПЕСЕН (song) с картинками =====
+        { 
+          question: 'Как называется эта песня Queen?',
+          image: 'https://picsum.photos/seed/bohemian/400/200',
+          answer: 'bohemian rhapsody',
+          category: 'song'
+        },
+        { 
+          question: 'Узнайте хит Nirvana:',
+          image: 'https://picsum.photos/seed/smells/400/200',
+          answer: 'smells like teen spirit',
+          category: 'song'
+        },
+        // Обычные вопросы про песни
+        { question: 'Название песни Queen, ставшей гимном рока:', answer: 'we will rock you', category: 'song' },
+        { question: 'Какой трек унесся в космос с Вояджером?', answer: 'johnny b goode', category: 'song' },
+        { question: 'Легендарная баллада Guns N\' Roses:', answer: 'november rain', category: 'song' },
+        { question: 'Какую песню спел Фредди Меркьюри на Live Aid?', answer: 'bohemian rhapsody', category: 'song' },
+        { question: 'Самый известный хит The Beatles:', answer: 'hey jude', category: 'song' },
+        { question: 'Песня Led Zeppelin из фильма "Назад в будущее":', answer: 'stairway to heaven', category: 'song' },
+        { question: 'Хит AC/DC из 1979 года:', answer: 'highway to hell', category: 'song' },
+        { question: 'Песня Metallica из альбома "Metallica":', answer: 'enter sandman', category: 'song' },
+        { question: 'Гимн рок-музыки от Queen:', answer: 'we are the champions', category: 'song' },
+        { question: 'Песня Nirvana из 1991 года:', answer: 'smells like teen spirit', category: 'song' },
+        { question: 'Хит Pink Floyd из "The Wall":', answer: 'another brick in the wall', category: 'song' },
+        { question: 'Песня The Rolling Stones 1965 года:', answer: 'satisfaction', category: 'song' },
+        { question: 'Баллада Eagles из 1976 года:', answer: 'hotel california', category: 'song' },
+        { question: 'Песня Deep Purple 1972 года:', answer: 'smoke on the water', category: 'song' },
+        { question: 'Хит Bon Jovi из 1986 года:', answer: 'livin on a prayer', category: 'song' },
       ]
     };
 
@@ -1073,12 +1200,26 @@
       return arr;
     }
 
-    function getDistractors(correctAnswer, pool, count = 3) {
-      const allAnswers = pool.map(q => q.answer);
-      const uniqueAnswers = [...new Set(allAnswers)];
-      const filtered = uniqueAnswers.filter(a => a !== correctAnswer);
-      const shuffled = shuffleArray([...filtered]);
-      return shuffled.slice(0, count);
+    function getCategoryAnswers(pool, category, excludeAnswer) {
+      const answers = pool
+        .filter(q => q.category === category && q.answer !== excludeAnswer)
+        .map(q => q.answer);
+      const unique = [...new Set(answers)];
+      return shuffleArray(unique);
+    }
+
+    function getDistractors(correctAnswer, pool, category, count = 3) {
+      const categoryAnswers = getCategoryAnswers(pool, category, correctAnswer);
+      if (categoryAnswers.length < count) {
+        const allAnswers = pool
+          .filter(q => q.answer !== correctAnswer)
+          .map(q => q.answer);
+        const uniqueAll = [...new Set(allAnswers)];
+        const shuffledAll = shuffleArray(uniqueAll);
+        const additional = shuffledAll.filter(a => !categoryAnswers.includes(a));
+        return [...categoryAnswers, ...additional].slice(0, count);
+      }
+      return categoryAnswers.slice(0, count);
     }
 
     function normalize(str) {
@@ -1124,7 +1265,7 @@
     function renderQuestion() {
       if (gameOver) {
         questionText.innerHTML = `
-          <div class="final-result">🎵 Викторина завершена!</div>
+          <div class="final-result"> Викторина завершена!</div>
           <div class="final-sub">Правильных ответов: ${score} из ${currentQuestions.length}</div>
         `;
         questionImage.style.display = 'none';
@@ -1141,7 +1282,6 @@
 
       const q = currentQuestions[currentIndex];
       
-      // Отображаем картинку, если она есть
       if (q.image) {
         questionImage.src = q.image;
         questionImage.style.display = 'block';
@@ -1155,10 +1295,20 @@
       totalNumEl.textContent = currentQuestions.length;
 
       const correct = q.answer;
-      let distractors = getDistractors(correct, currentQuestions, 3);
+      const category = q.category;
+      
+      let distractors = getDistractors(correct, currentQuestions, category, 3);
       while (distractors.length < 3) {
-        distractors.push('неизвестно');
+        const fallbackAnswers = currentQuestions
+          .filter(q => q.answer !== correct && !distractors.includes(q.answer))
+          .map(q => q.answer);
+        if (fallbackAnswers.length === 0) break;
+        distractors.push(fallbackAnswers[0]);
       }
+      while (distractors.length < 3) {
+        distractors.push('???');
+      }
+      
       let options = shuffleArray([correct, ...distractors]);
 
       optionBtns.forEach((btn, idx) => {
@@ -1171,7 +1321,7 @@
 
       isAnswered = false;
       nextBtn.classList.remove('active');
-      messageBox.textContent = '🎵 Выберите один из вариантов';
+      messageBox.textContent = 'Выберите один из вариантов';
       messageBox.className = 'message-box';
       scoreDisplay.textContent = score;
       isGameActive = true;
