@@ -83,7 +83,7 @@
       border: 1px solid #3d4a6b;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       flex-wrap: wrap;
       justify-content: center;
     }
@@ -96,6 +96,51 @@
       font-weight: 600;
       color: #b9c8ff;
       border: 1px solid #3a4568;
+    }
+
+    /* ===== КОМПАКТНЫЙ ТАЙМЕР ===== */
+    .timer-compact {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #0d121f;
+      padding: 2px 10px 2px 6px;
+      border-radius: 40px;
+      border: 1px solid #3a4568;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #b9c8ff;
+      transition: border-color 0.3s ease, color 0.3s ease;
+    }
+
+    .timer-compact .icon {
+      font-size: 0.8rem;
+    }
+
+    .timer-compact.warning {
+      border-color: #f5b042;
+      color: #ffd966;
+    }
+
+    .timer-compact.danger {
+      border-color: #c44b5c;
+      color: #fcc8d2;
+      animation: timerPulse 0.5s ease-in-out infinite alternate;
+    }
+
+    .timer-compact.timeout {
+      border-color: #c44b5c;
+      color: #fcc8d2;
+      background: #3d1e28;
+    }
+
+    .timer-compact.hidden {
+      display: none;
+    }
+
+    @keyframes timerPulse {
+      from { opacity: 0.7; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1.02); }
     }
 
     .music-btn {
@@ -342,6 +387,12 @@
       color: #fcc8d2;
     }
 
+    .message-box.timeout {
+      border-color: #c44b5c;
+      background: #3d1e28;
+      color: #fcc8d2;
+    }
+
     .action-area {
       display: flex;
       flex-direction: column;
@@ -580,6 +631,11 @@
       .question-counter {
         font-size: 0.85rem;
         padding: 5px 14px;
+        gap: 8px;
+      }
+      .timer-compact {
+        font-size: 0.8rem;
+        padding: 2px 8px 2px 4px;
       }
       .message-box {
         font-size: 0.95rem;
@@ -685,7 +741,11 @@
       .question-counter {
         font-size: 0.8rem;
         padding: 4px 12px;
-        gap: 4px;
+        gap: 6px;
+      }
+      .timer-compact {
+        font-size: 0.75rem;
+        padding: 1px 6px 1px 3px;
       }
       .theme-badge {
         font-size: 0.7rem;
@@ -779,6 +839,11 @@
       .question-counter {
         font-size: 0.7rem;
         padding: 4px 10px;
+        gap: 4px;
+      }
+      .timer-compact {
+        font-size: 0.65rem;
+        padding: 1px 4px 1px 2px;
       }
       .message-box {
         font-size: 0.8rem;
@@ -824,6 +889,11 @@
       <div class="question-counter">
         <span id="currentQuestionNum">1</span>/<span id="totalQuestionsNum">20</span>
         <span class="theme-badge" id="themeBadge">🎵</span>
+        <!-- КОМПАКТНЫЙ ТАЙМЕР -->
+        <span class="timer-compact hidden" id="timerCompact">
+          <span class="icon">⏱</span>
+          <span id="timerValue">20</span>с
+        </span>
       </div>
     </div>
   </div>
@@ -887,56 +957,16 @@
   (function() {
     "use strict";
 
-    // ======= БАЗА ВОПРОСОВ С КАРТИНКАМИ =======
-    // Для демонстрации используются ссылки на picsum.photos
-    // Вы можете заменить на свои локальные пути: 'img/nazvanie.jpg'
-    
+    // ======= БАЗА ВОПРОСОВ =======
     const QUESTIONS_BY_THEME = {
       pop: [
-        // ===== ИСПОЛНИТЕЛИ (artist) с картинками =====
-        { 
-          question: 'Кто этот король поп-музыки?',
-          image: 'img/michaeljackson.jpg',
-          answer: 'michael jackson',
-          category: 'artist'
-        },
-        { 
-          question: 'Узнайте певицу по фото:',
-          image: 'img/whitneyhouston.jpg',
-          answer: 'whitney houston',
-          category: 'artist'
-        },
-        { 
-          question: 'Как зовут этого музыканта?',
-          image: 'img/Prince-W2A-copyright-The-Prince-Estate-photo-credit-Mike-Ruiz.jpg',
-          answer: 'prince',
-          category: 'artist'
-        },
-        { 
-          question: 'Кто эта поп-звезда?',
-          image: 'img/taylor-swift.jpg',
-          answer: 'taylor swift',
-          category: 'artist'
-        },
-        { 
-          question: 'Узнайте артиста:',
-          image: 'img/brunomars.jpg',
-          answer: 'bruno mars',
-          category: 'artist'
-        },
-        { 
-          question: 'Кто эта певица с мощным голосом?',
-          image: 'img/adele.png',
-          answer: 'adele',
-          category: 'artist'
-        },
-        { 
-          question: 'Узнайте рэпера:',
-          image: 'img/eminem.jpg',
-          answer: 'eminem',
-          category: 'artist'
-        },
-        // Обычные вопросы про исполнителей
+        { question: 'Кто этот король поп-музыки?', image: 'img/michaeljackson.jpg', answer: 'michael jackson', category: 'artist' },
+        { question: 'Узнайте певицу по фото:', image: 'img/whitneyhouston.jpg', answer: 'whitney houston', category: 'artist' },
+        { question: 'Как зовут этого музыканта?', image: 'img/Prince-W2A-copyright-The-Prince-Estate-photo-credit-Mike-Ruiz.jpg', answer: 'prince', category: 'artist' },
+        { question: 'Кто эта поп-звезда?', image: 'img/taylor-swift.jpg', answer: 'taylor swift', category: 'artist' },
+        { question: 'Узнайте артиста:', image: 'img/brunomars.jpg', answer: 'bruno mars', category: 'artist' },
+        { question: 'Кто эта певица с мощным голосом?', image: 'img/adele.png', answer: 'adele', category: 'artist' },
+        { question: 'Узнайте рэпера:', image: 'img/eminem.jpg', answer: 'eminem', category: 'artist' },
         { question: 'Кто исполнил "Billie Jean"?', answer: 'michael jackson', category: 'artist' },
         { question: 'Кто спел "I Will Always Love You"?', answer: 'whitney houston', category: 'artist' },
         { question: 'Кто спел "My Heart Will Go On"?', answer: 'celine dion', category: 'artist' },
@@ -955,21 +985,8 @@
         { question: 'Кто исполнил "Havana"?', answer: 'camila cabello', category: 'artist' },
         { question: 'Кто спел "Shake It Off"?', answer: 'taylor swift', category: 'artist' },
         { question: 'Кто автор "Blinding Lights"?', answer: 'the weeknd', category: 'artist' },
-        
-        // ===== НАЗВАНИЯ ПЕСЕН (song) с картинками =====
-        { 
-          question: 'Как называется эта песня ABBA?',
-          image: 'https://picsum.photos/seed/abba/400/200',
-          answer: 'waterloo',
-          category: 'song'
-        },
-        { 
-          question: 'Узнайте хит Адель:',
-          image: 'https://picsum.photos/seed/adele2/400/200',
-          answer: 'someone like you',
-          category: 'song'
-        },
-        // Обычные вопросы про песни
+        { question: 'Как называется эта песня ABBA?', image: 'https://picsum.photos/seed/abba/400/200', answer: 'waterloo', category: 'song' },
+        { question: 'Узнайте хит Адель:', image: 'https://picsum.photos/seed/adele2/400/200', answer: 'someone like you', category: 'song' },
         { question: 'Какой хит группы ABBA стал символом 70-х?', answer: 'waterloo', category: 'song' },
         { question: 'Название песни Адель о прошлом:', answer: 'someone like you', category: 'song' },
         { question: 'Песня Майкла Джексона с клипом-короткометражкой:', answer: 'thriller', category: 'song' },
@@ -982,21 +999,8 @@
         { question: 'Песня Тейлор Свифт о расставании:', answer: 'we are never ever getting back together', category: 'song' },
         { question: 'Хит Бруно Марса о любви:', answer: 'just the way you are', category: 'song' },
         { question: 'Песня Эда Ширана для свадеб:', answer: 'thinking out loud', category: 'song' },
-        
-        // ===== ГРУППЫ (band) с картинками =====
-        { 
-          question: 'Узнайте эту группу:',
-          image: 'img/abba.jpeg',
-          answer: 'abba',
-          category: 'band'
-        },
-        { 
-          question: 'Кто эти музыканты?',
-          image: 'img/Beatles.jpg',
-          answer: 'the beatles',
-          category: 'band'
-        },
-        // Обычные вопросы про группы
+        { question: 'Узнайте эту группу:', image: 'img/abba.jpeg', answer: 'abba', category: 'band' },
+        { question: 'Кто эти музыканты?', image: 'img/Beatles.jpg', answer: 'the beatles', category: 'band' },
         { question: 'Кто спел "Girls Like You"?', answer: 'maroon 5', category: 'band' },
         { question: 'Шведская группа, подарившая нам "Dancing Queen":', answer: 'abba', category: 'band' },
         { question: 'Британская группа с Полом Маккартни:', answer: 'the beatles', category: 'band' },
@@ -1010,38 +1014,11 @@
         { question: 'Австралийская группа "Kylie Minogue"?', answer: 'the seekers', category: 'band' },
       ],
       rock: [
-        // ===== ИСПОЛНИТЕЛИ (artist) с картинками =====
-        { 
-          question: 'Кто этот легендарный вокалист?',
-          image: 'img/freddie.jpg',
-          answer: 'Freddie Mercury',
-          category: 'artist'
-        },
-        { 
-          question: 'Узнайте гитариста:',
-          image: 'https://avatars.mds.yandex.net/i?id=e228a5f8bec33b60073bde55b7f3cdab_l-5668624-images-thumbs&n=13',
-          answer: 'Jimi Hendrix',
-          category: 'artist'
-        },
-        { 
-          question: 'Кто этот рок-музыкант?',
-          image: 'img/kurt.jpg',
-          answer: 'Kurt Cobain',
-          category: 'artist'
-        },
-        { 
-          question: 'Узнайте фронтмена:',
-          image: 'img/axl.jpg',
-          answer: 'Axl Rose',
-          category: 'artist'
-        },
-        { 
-          question: 'Кто этот гитарный гений?',
-          image: 'img/jimmypage.jpg',
-          answer: 'Jimmy Page',
-          category: 'artist'
-        },
-        // Обычные вопросы про исполнителей
+        { question: 'Кто этот легендарный вокалист?', image: 'img/freddie.jpg', answer: 'Freddie Mercury', category: 'artist' },
+        { question: 'Узнайте гитариста:', image: 'https://avatars.mds.yandex.net/i?id=e228a5f8bec33b60073bde55b7f3cdab_l-5668624-images-thumbs&n=13', answer: 'Jimi Hendrix', category: 'artist' },
+        { question: 'Кто этот рок-музыкант?', image: 'img/kurt.jpg', answer: 'Kurt Cobain', category: 'artist' },
+        { question: 'Узнайте фронтмена:', image: 'img/axl.jpg', answer: 'Axl Rose', category: 'artist' },
+        { question: 'Кто этот гитарный гений?', image: 'img/jimmypage.jpg', answer: 'Jimmy Page', category: 'artist' },
         { question: 'Кто был вокалистом Queen?', answer: 'Freddie Mercury', category: 'artist' },
         { question: 'Легендарный гитарист Джими:', answer: 'Jimi Hendrix', category: 'artist' },
         { question: 'Кто автор "Imagine"?', answer: 'John Lennon', category: 'artist' },
@@ -1055,39 +1032,11 @@
         { question: 'Гитарист Pink Floyd:', answer: 'David Gilmour', category: 'artist' },
         { question: 'Автор "Hotel California":', answer: 'Don Henley', category: 'artist' },
         { question: 'Вокалист AC/DC:', answer: 'Brian Johnson', category: 'artist' },
-        
-        // ===== ГРУППЫ (band) с картинками =====
-        { 
-          question: 'Узнайте легендарную группу:',
-          image: 'img/Queen-Bohemian-Rhapsody.jpg',
-          answer: 'queen',
-          category: 'band'
-        },
-        { 
-          question: 'Узнайте группу по фото:',
-          image: 'img/nirvana.jpg',
-          answer: 'nirvana',
-          category: 'band'
-        },
-        { 
-          question: 'Узнайте рок-группу:',
-          image: 'img/ledzeppelin.jpg',
-          answer: 'led zeppelin',
-          category: 'band'
-        },
-        { 
-          question: 'Кто эти рок-легенды?',
-          image: 'img/Pink_Floyd.jpg',
-          answer: 'pink floyd',
-          category: 'band'
-        },
-        { 
-          question: 'Узнайте группу:',
-          image: 'img/the rolling stones.jpg',
-          answer: 'the rolling stones',
-          category: 'band'
-        },
-        // Обычные вопросы про группы
+        { question: 'Узнайте легендарную группу:', image: 'img/Queen-Bohemian-Rhapsody.jpg', answer: 'queen', category: 'band' },
+        { question: 'Узнайте группу по фото:', image: 'img/nirvana.jpg', answer: 'nirvana', category: 'band' },
+        { question: 'Узнайте рок-группу:', image: 'img/ledzeppelin.jpg', answer: 'led zeppelin', category: 'band' },
+        { question: 'Кто эти рок-легенды?', image: 'img/Pink_Floyd.jpg', answer: 'pink floyd', category: 'band' },
+        { question: 'Узнайте группу:', image: 'img/the rolling stones.jpg', answer: 'the rolling stones', category: 'band' },
         { question: 'Группа Курта Кобейна:', answer: 'nirvana', category: 'band' },
         { question: 'Рок-группа с "Stairway to Heaven":', answer: 'led zeppelin', category: 'band' },
         { question: 'Группа "Another Brick in the Wall":', answer: 'pink floyd', category: 'band' },
@@ -1107,21 +1056,8 @@
         { question: 'Кто спел "House of the Rising Sun"?', answer: 'the animals', category: 'band' },
         { question: 'Группа "Light My Fire":', answer: 'the doors', category: 'band' },
         { question: 'Кто исполнил "Whole Lotta Love"?', answer: 'led zeppelin', category: 'band' },
-        
-        // ===== НАЗВАНИЯ ПЕСЕН (song) с картинками =====
-        { 
-          question: 'Как называется эта песня Queen?',
-          image: 'https://picsum.photos/seed/bohemian/400/200',
-          answer: 'bohemian rhapsody',
-          category: 'song'
-        },
-        { 
-          question: 'Узнайте хит Nirvana:',
-          image: 'https://picsum.photos/seed/smells/400/200',
-          answer: 'smells like teen spirit',
-          category: 'song'
-        },
-        // Обычные вопросы про песни
+        { question: 'Как называется эта песня Queen?', image: 'https://picsum.photos/seed/bohemian/400/200', answer: 'bohemian rhapsody', category: 'song' },
+        { question: 'Узнайте хит Nirvana:', image: 'https://picsum.photos/seed/smells/400/200', answer: 'smells like teen spirit', category: 'song' },
         { question: 'Название песни Queen, ставшей гимном рока:', answer: 'we will rock you', category: 'song' },
         { question: 'Какой трек унесся в космос с Вояджером?', answer: 'johnny b goode', category: 'song' },
         { question: 'Легендарная баллада Guns N\' Roses:', answer: 'november rain', category: 'song' },
@@ -1226,6 +1162,93 @@
       return str.trim().toLowerCase().replace(/\s+/g, ' ');
     }
 
+    // ======= ТАЙМЕР =======
+    let timerInterval = null;
+    let timeLeft = 20;
+    const MAX_TIME = 20;
+    let isTimerPaused = false;
+
+    const timerCompact = document.getElementById('timerCompact');
+    const timerValue = document.getElementById('timerValue');
+
+    function startTimer() {
+      stopTimer();
+      timeLeft = MAX_TIME;
+      updateTimerDisplay();
+      isTimerPaused = false;
+      timerCompact.classList.remove('hidden');
+      
+      timerInterval = setInterval(() => {
+        if (isTimerPaused) return;
+        
+        timeLeft--;
+        updateTimerDisplay();
+        
+        if (timeLeft <= 0) {
+          stopTimer();
+          handleTimeout();
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      timerCompact.classList.add('hidden');
+      timerCompact.className = 'timer-compact hidden';
+    }
+
+    function pauseTimer() {
+      isTimerPaused = true;
+    }
+
+    function resumeTimer() {
+      if (isTimerPaused && timerInterval) {
+        isTimerPaused = false;
+      }
+    }
+
+    function updateTimerDisplay() {
+      timerValue.textContent = timeLeft;
+      timerCompact.className = 'timer-compact';
+      
+      if (timeLeft <= 5 && timeLeft > 0) {
+        timerCompact.classList.add('danger');
+      } else if (timeLeft <= 10 && timeLeft > 0) {
+        timerCompact.classList.add('warning');
+      }
+    }
+
+    function handleTimeout() {
+      if (isAnswered || gameOver) return;
+      
+      isAnswered = true;
+      optionBtns.forEach(btn => btn.disabled = true);
+      
+      const correct = currentQuestions[currentIndex].answer;
+      
+      optionBtns.forEach(btn => {
+        const val = btn.dataset.answer;
+        if (normalize(val) === normalize(correct)) {
+          btn.classList.add('correct');
+        }
+      });
+      
+      messageBox.textContent = `⏰ Время вышло! Правильный ответ: "${correct}"`;
+      messageBox.className = 'message-box timeout';
+      
+      timerCompact.classList.add('timeout');
+      
+      nextBtn.classList.add('active');
+      if (currentIndex === currentQuestions.length - 1) {
+        nextBtn.textContent = '🏁 Завершить';
+      } else {
+        nextBtn.textContent = '▶ Следующий';
+      }
+    }
+
     // ======= СОСТОЯНИЕ =======
     let currentQuestions = [];
     let currentIndex = 0;
@@ -1265,7 +1288,7 @@
     function renderQuestion() {
       if (gameOver) {
         questionText.innerHTML = `
-          <div class="final-result"> Викторина завершена!</div>
+          <div class="final-result">🎵 Викторина завершена!</div>
           <div class="final-sub">Правильных ответов: ${score} из ${currentQuestions.length}</div>
         `;
         questionImage.style.display = 'none';
@@ -1275,6 +1298,7 @@
         nextBtn.classList.remove('active');
         currentNumEl.textContent = '🎯';
         isGameActive = false;
+        stopTimer();
         return;
       }
 
@@ -1321,16 +1345,20 @@
 
       isAnswered = false;
       nextBtn.classList.remove('active');
-      messageBox.textContent = 'Выберите один из вариантов';
+      messageBox.textContent = '🎵 Выберите один из вариантов';
       messageBox.className = 'message-box';
       scoreDisplay.textContent = score;
       isGameActive = true;
+      
+      startTimer();
     }
 
     // ======= ОБРАБОТЧИК ВЫБОРА ОТВЕТА =======
     function handleOptionClick(e) {
       const btn = e.currentTarget;
       if (isAnswered || gameOver || btn.disabled) return;
+
+      stopTimer();
 
       const selected = btn.dataset.answer;
       const correct = currentQuestions[currentIndex].answer;
@@ -1424,6 +1452,7 @@
         goToMenuDirect();
         return;
       }
+      pauseTimer();
       modalOverlay.classList.add('active');
     }
 
@@ -1435,10 +1464,12 @@
       menuScreen.style.display = 'flex';
       menuScreen.classList.add('active');
       nextBtn.classList.remove('active');
+      stopTimer();
     }
 
     function cancelGoToMenu() {
       modalOverlay.classList.remove('active');
+      resumeTimer();
     }
 
     function restartGame() {
