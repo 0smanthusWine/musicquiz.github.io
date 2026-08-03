@@ -131,7 +131,6 @@
       border-color: #5a6a9a;
     }
 
-    /* Стиль для выключенной музыки */
     .music-btn.muted {
       background: #1a1a2a;
       border-color: #4a3a4a;
@@ -642,7 +641,7 @@
   <div class="header">
     <div class="header-left">
       <div class="score-box">🏆 <span id="scoreDisplay">0</span></div>
-      <button class="music-btn" id="musicBtn" title="Включить/выключить музыку">🔇</button>
+      <button class="music-btn muted" id="musicBtn" title="Включить/выключить музыку">🔇</button>
     </div>
     <div class="header-right">
       <div class="question-counter">
@@ -753,52 +752,53 @@
       ]
     };
 
-    // ======= ФОНОВАЯ МУЗЫКА (генерация через Web Audio) =======
+    // ======= ФОНОВАЯ МУЗЫКА (непрерывный цикл) =======
     let audioContext = null;
-    let musicNodes = [];
     let isMusicPlaying = false;
     let musicGainNode = null;
     let musicOscillators = [];
     let musicTimeout = null;
+    let isMusicInitialized = false;
 
-    // Создаем простую приятную мелодию
-    function createBackgroundMusic() {
+    // Создаем бесконечную мелодию
+    function createContinuousMusic() {
       if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
       }
 
-      // Если музыка уже играет, останавливаем
-      stopMusic();
+      // Очищаем старые осцилляторы
+      stopAllOscillators();
 
       musicGainNode = audioContext.createGain();
-      musicGainNode.gain.value = 0.15;
+      musicGainNode.gain.value = 0.12;
       musicGainNode.connect(audioContext.destination);
 
-      // Ноты для мелодии (частота, длительность)
+      // Бесконечный цикл нот
       const notes = [
-        { freq: 523.25, dur: 0.4 }, // C5
+        { freq: 523.25, dur: 0.3 }, // C5
+        { freq: 587.33, dur: 0.25 }, // D5
+        { freq: 659.25, dur: 0.3 }, // E5
+        { freq: 783.99, dur: 0.4 }, // G5
+        { freq: 659.25, dur: 0.25 }, // E5
         { freq: 587.33, dur: 0.3 }, // D5
-        { freq: 659.25, dur: 0.4 }, // E5
-        { freq: 783.99, dur: 0.5 }, // G5
+        { freq: 523.25, dur: 0.5 }, // C5
+        { freq: 659.25, dur: 0.25 }, // E5
+        { freq: 783.99, dur: 0.3 }, // G5
+        { freq: 880.00, dur: 0.4 }, // A5
+        { freq: 783.99, dur: 0.25 }, // G5
         { freq: 659.25, dur: 0.3 }, // E5
         { freq: 587.33, dur: 0.4 }, // D5
-        { freq: 523.25, dur: 0.6 }, // C5
-        { freq: 659.25, dur: 0.3 }, // E5
-        { freq: 783.99, dur: 0.4 }, // G5
-        { freq: 880.00, dur: 0.5 }, // A5
-        { freq: 783.99, dur: 0.3 }, // G5
-        { freq: 659.25, dur: 0.4 }, // E5
-        { freq: 587.33, dur: 0.5 }, // D5
-        { freq: 659.25, dur: 0.3 }, // E5
-        { freq: 783.99, dur: 0.6 }, // G5
-        { freq: 880.00, dur: 0.4 }, // A5
-        { freq: 987.77, dur: 0.5 }, // B5
+        { freq: 659.25, dur: 0.25 }, // E5
+        { freq: 783.99, dur: 0.5 }, // G5
         { freq: 880.00, dur: 0.3 }, // A5
-        { freq: 783.99, dur: 0.4 }, // G5
-        { freq: 659.25, dur: 0.6 }, // E5
+        { freq: 987.77, dur: 0.4 }, // B5
+        { freq: 880.00, dur: 0.25 }, // A5
+        { freq: 783.99, dur: 0.3 }, // G5
+        { freq: 659.25, dur: 0.5 }, // E5
       ];
 
       let time = audioContext.currentTime + 0.1;
+      let totalDuration = 0;
 
       notes.forEach((note) => {
         const osc = audioContext.createOscillator();
@@ -807,8 +807,8 @@
         osc.type = 'sine';
         osc.frequency.value = note.freq;
 
-        gain.gain.setValueAtTime(0.12, time);
-        gain.gain.exponentialRampToValueAtTime(0.01, time + note.dur);
+        gain.gain.setValueAtTime(0.1, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + note.dur);
 
         osc.connect(gain);
         gain.connect(musicGainNode);
@@ -818,37 +818,21 @@
 
         musicOscillators.push({ osc, gain, time, dur: note.dur });
 
-        time += note.dur + 0.15;
+        time += note.dur + 0.1;
+        totalDuration += note.dur + 0.1;
       });
 
-      // Пауза и повтор
-      const totalDuration = time - audioContext.currentTime + 0.5;
+      // Запускаем следующий цикл через небольшую паузу
+      const nextStart = time + 0.2;
       if (musicTimeout) clearTimeout(musicTimeout);
       musicTimeout = setTimeout(() => {
         if (isMusicPlaying) {
-          createBackgroundMusic();
+          createContinuousMusic();
         }
-      }, totalDuration * 1000);
+      }, (nextStart - audioContext.currentTime) * 1000);
     }
 
-    function startMusic() {
-      if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioContext.state === 'suspended') {
-        audioContext.resume();
-      }
-      isMusicPlaying = true;
-      createBackgroundMusic();
-      updateMusicButton(true);
-    }
-
-    function stopMusic() {
-      isMusicPlaying = false;
-      if (musicTimeout) {
-        clearTimeout(musicTimeout);
-        musicTimeout = null;
-      }
+    function stopAllOscillators() {
       musicOscillators.forEach(({ osc, gain }) => {
         try {
           osc.stop();
@@ -863,6 +847,31 @@
         } catch (e) {}
         musicGainNode = null;
       }
+    }
+
+    function startMusic() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+      
+      // Если музыка уже играет, не перезапускаем
+      if (isMusicPlaying) return;
+      
+      isMusicPlaying = true;
+      createContinuousMusic();
+      updateMusicButton(true);
+    }
+
+    function stopMusic() {
+      isMusicPlaying = false;
+      if (musicTimeout) {
+        clearTimeout(musicTimeout);
+        musicTimeout = null;
+      }
+      stopAllOscillators();
       updateMusicButton(false);
     }
 
