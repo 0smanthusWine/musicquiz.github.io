@@ -213,14 +213,94 @@
   gap: 18px;
   padding: 16px 0 8px;
 }
+.menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  padding: 0 10px;
+
+}
+
+.menulogo {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  /* Смещаем логотип вниз, чтобы он был на уровне первой строки */
+  align-self: center;
+  margin-top: 2px;
+}
 
 .menu-title {
-  font-size: 2rem;
+   font-size: 1.7rem;
   font-weight: 800;
-  color: #fcc8d2;
+   color: #fcc8d2;
   text-shadow: 0 0 30px rgba(245, 176, 66, 0.3);
-  margin-bottom: 4px;
+  line-height: 1.2;
+  text-align: left;
 }
+
+.menu-title .first-line {
+  display: block;
+  font-size: 1em;
+}
+
+.menu-title .second-line {
+  display: block;
+  font-size: 0.75em;
+  font-weight: 600;
+  text-shadow: none;
+  margin-top: 2px;
+}
+
+/* ===== АДАПТИВ ===== */
+@media (max-width: 600px) {
+  .menulogo {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+  
+  .menu-title {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-header {
+    gap: 10px;
+    padding: 0 6px;
+  }
+  
+  .menulogo {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border-width: 1.5px;
+  }
+  
+  .menu-title {
+    font-size: 1.1rem;
+  }
+  
+  .menu-title .second-line {
+    font-size: 0.7em;
+  }
+}
+
+@media (max-width: 380px) {
+  .menulogo {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+  
+  .menu-title {
+    font-size: 0.95rem;
+  }
+}
+
 
 .menu-subtitle {
   font-size: 1.05rem;
