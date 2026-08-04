@@ -10,7 +10,7 @@ body {
   font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
   background: 
     linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url('/backg.jpg') no-repeat center center fixed;
+    url('backg.jpg') no-repeat center center fixed;
   background-size: cover;
   min-height: 100vh;
   display: flex;
