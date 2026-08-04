@@ -5,9 +5,13 @@
   padding: 0;
 }
 
+/* ===== ФОНОВОЕ ИЗОБРАЖЕНИЕ ===== */
 body {
   font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
-  background: linear-gradient(145deg, #0b0e1a 0%, #1a1f2f 100%);
+  background: 
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('/backg.jpg') no-repeat center center fixed;
+  background-size: cover;
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -18,7 +22,7 @@ body {
 }
 
 .game-container {
-  background: rgba(22, 28, 46, 0.85);
+  background: rgba(46, 22, 35, 0.85);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   width: 100%;
@@ -26,7 +30,7 @@ body {
   padding: 24px 18px 28px;
   border-radius: 40px 40px 28px 28px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 215, 0, 0.15);
-  border: 1px solid rgba(255, 215, 0, 0.2);
+  border: 1px solid rgba(255, 4, 0, 0.2);
   text-align: center;
   position: relative;
 }
@@ -37,7 +41,7 @@ body {
   align-items: center;
   margin-bottom: 16px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 4, 0, 0.2);
   flex-wrap: wrap;
   gap: 8px;
 }
@@ -67,13 +71,13 @@ body {
 }
 
 .question-counter {
-  background: #1e2538;
+  background: #512841;
   padding: 6px 16px;
   border-radius: 60px;
   font-weight: 500;
   font-size: 0.95rem;
-  color: #b9c8ff;
-  border: 1px solid #3d4a6b;
+  color: #ffb9b9;
+  border: 1px solid #371010;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -82,13 +86,13 @@ body {
 }
 
 .theme-badge {
-  background: #1a2135;
+  background: #512841;
   padding: 2px 12px;
   border-radius: 40px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #b9c8ff;
-  border: 1px solid #3a4568;
+  color: #ffb9b9;
+  border: 1px solid #371010;
 }
 
 /* ===== КОМПАКТНЫЙ ТАЙМЕР ===== */
@@ -99,10 +103,10 @@ body {
   background: #0d121f;
   padding: 2px 10px 2px 6px;
   border-radius: 40px;
-  border: 1px solid #3a4568;
+  border: 1px solid #371010;
   font-weight: 600;
   font-size: 0.95rem;
-  color: #b9c8ff;
+  color: #ffb9b9;
   transition: border-color 0.3s ease, color 0.3s ease;
 }
 
@@ -137,8 +141,8 @@ body {
 }
 
 .music-btn {
-  background: #1a2135;
-  border: 2px solid #3a4568;
+  background: #512841;
+  border: 2px solid #371010;
   border-radius: 50%;
   width: 44px;
   height: 44px;
@@ -163,8 +167,8 @@ body {
 }
 
 .music-btn:hover:not(:active) {
-  background: #26305a;
-  border-color: #5a6a9a;
+  background: #512841;
+  border-color: #371010;
 }
 
 .music-btn.muted {
