@@ -278,10 +278,10 @@
   const modalConfirmBtn = document.getElementById('modalConfirmBtn');
 
   const themeNames = {
-    all: '🎶 Все жанры',
+    all: '🎶 Все',
     pop: '🎤 Поп',
     rock: '🎸 Рок',
-    rap: '🎧 Рэп и хип-хоп'
+    rap: '🎧 Рэп'
   };
 
   // ======= ФУНКЦИЯ ДЛЯ ДОБАВЛЕНИЯ ЗВУКА К КНОПКАМ =======
@@ -297,7 +297,7 @@
   function renderQuestion() {
     if (gameOver) {
       questionText.innerHTML = `
-        <div class="final-result">🎵 Викторина завершена!</div>
+        <div class="final-result">Викторина завершена!</div>
         <div class="final-sub">Правильных ответов: ${score} из ${currentQuestions.length}</div>
       `;
       questionImage.style.display = 'none';
@@ -367,7 +367,7 @@
     isAnswered = false;
     nextBtn.classList.remove('active');
     nextBtn.style.display = 'none';
-    messageBox.textContent = '🎵 Выберите один из вариантов';
+    messageBox.textContent = 'Выберите один из вариантов';
     messageBox.className = 'message-box';
     scoreDisplay.textContent = score;
     isGameActive = true;
