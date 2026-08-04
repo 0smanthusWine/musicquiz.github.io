@@ -604,4 +604,99 @@
   }
 
   initGame();
+
+  // ======= ОТКЛЮЧЕНИЕ КОНТЕКСТНОГО МЕНЮ =======
+
+
+    // Отключаем контекстное меню для всей страницы
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+  });
+
+  // Отключаем долгое нажатие на мобильных
+  let longPressTimer = null;
+  
+  document.addEventListener('touchstart', function(e) {
+    // Проверяем, что это не кнопка (чтобы не мешать нажатиям)
+    const target = e.target;
+    if (target.closest('button') || target.closest('.option-btn') || target.closest('.theme-btn')) {
+      return;
+    }
+    
+    // Запускаем таймер для отслеживания долгого нажатия
+    longPressTimer = setTimeout(function() {
+      e.preventDefault();
+    }, 500);
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e) {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+    }
+  }, { passive: true });
+
+  // Отключаем контекстное меню через клавиатуру (Shift+F10)
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'F10' && e.shiftKey) {
+      e.preventDefault();
+      return false;
+    }
+    // Отключаем меню приложения (Windows)
+    if (e.key === 'ContextMenu') {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  console.log('Контекстное меню отключено');
+
+
+// ======= ОСТАНОВКА МУЗЫКИ ПРИ ПОТЕРЕ ФОКУСА =======
+// ======= ОСТАНОВКА МУЗЫКИ ПРИ ПОТЕРЕ ФОКУСА =======
+let wasPlayingBeforeHide = false;
+
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    if (isMusicPlaying) {
+      wasPlayingBeforeHide = true;
+      if (audioElement) audioElement.pause();
+    }
+  } else {
+    if (wasPlayingBeforeHide && audioElement) {
+      audioElement.play()
+        .then(() => { isMusicPlaying = true; updateMusicButton(true); })
+        .catch(() => { isMusicPlaying = false; updateMusicButton(false); });
+    }
+    wasPlayingBeforeHide = false;
+  }
+});
+
+window.addEventListener('blur', function() {
+  if (isMusicPlaying && audioElement) {
+    wasPlayingBeforeHide = true;
+    audioElement.pause();
+  }
+});
+
+window.addEventListener('focus', function() {
+  if (wasPlayingBeforeHide && audioElement) {
+    audioElement.play()
+      .then(() => { isMusicPlaying = true; updateMusicButton(true); })
+      .catch(() => { isMusicPlaying = false; updateMusicButton(false); });
+  }
+  wasPlayingBeforeHide = false;
+});
+
+  
+
 })();
+

@@ -946,3 +946,35 @@
     font-size: 1.2rem;
   }
 }
+
+
+/* ===== ОТКЛЮЧЕНИЕ КОНТЕКСТНОГО МЕНЮ ===== */
+/* Отключаем выделение текста и контекстное меню */
+.game-container,
+.game-container * {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Отключаем контекстное меню для всей страницы */
+body {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Для кнопок и интерактивных элементов сохраняем возможность нажатия */
+button,
+.option-btn,
+.theme-btn,
+.btn,
+.music-btn {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
