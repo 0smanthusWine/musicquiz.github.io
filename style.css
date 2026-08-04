@@ -195,14 +195,14 @@ body {
 .menu-title {
   font-size: 2rem;
   font-weight: 800;
-  color: #ffd966;
+  color: #fcc8d2;
   text-shadow: 0 0 30px rgba(245, 176, 66, 0.3);
   margin-bottom: 4px;
 }
 
 .menu-subtitle {
   font-size: 1.05rem;
-  color: #b9c8ff;
+  color: #e07486;
   margin-bottom: 8px;
 }
 
@@ -304,8 +304,8 @@ body {
 }
 
 .option-btn {
-  background: #1a2135;
-  border: 2px solid #3a4568;
+  background: #642424;
+  border: 2px solid #371010;
   border-radius: 18px;
   padding: 14px 10px;
   font-size: 1.0rem;
@@ -356,7 +356,7 @@ body {
 }
 
 .message-box {
-  background: #121926;
+  background: #51284147;
   padding: 12px 14px;
   border-radius: 36px;
   margin: 10px 0 12px;
@@ -364,10 +364,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #2e3b58;
+  border: 1px solid #371010;
   font-size: 1.05rem;
   font-weight: 500;
-  color: #d5e0ff;
+  color: #ffd5eb;
   word-break: break-word;
   box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.4);
 }
@@ -401,6 +401,7 @@ body {
   display: flex;
   justify-content: center;
   width: 100%;
+  margin-bottom: 6px;
 }
 
 #nextBtn {
@@ -453,9 +454,9 @@ body {
 }
 
 .btn-success {
-  background: #36b37e;
-  border-color: #5fdba3;
-  box-shadow: 0 6px 0 #1d6e4a;
+   background: #e3384f;
+  border-color: #e07486;
+  box-shadow: 0 6px 0 #7f2d3a;
 }
 
 .btn-danger {
@@ -465,15 +466,15 @@ body {
 }
 
 .btn-secondary {
-  background: #4a5a7a;
-  border-color: #6a7a9a;
-  box-shadow: 0 6px 0 #2a3a5a;
+  background: #e3384f;
+  border-color: #e07486;
+  box-shadow: 0 6px 0 #7f2d3a;
 }
 
 .btn-warning {
-  background: #d4a030;
-  border-color: #f5c050;
-  box-shadow: 0 6px 0 #8a6a20;
+  background: #e07486;
+  border-color: #e3384f;
+  box-shadow: 0 6px 0 #7f2d3a;
   color: #0b0e1a;
 }
 
@@ -524,7 +525,7 @@ body {
 
 .modal-box {
   background: #1a2135;
-  border: 2px solid #f5b042;
+  border: 2px solid #e07486;
   border-radius: 32px;
   padding: 32px 28px;
   max-width: 420px;
@@ -547,7 +548,7 @@ body {
 .modal-title {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #ffd966;
+  color: #e07486;
   margin-bottom: 12px;
 }
 
@@ -559,7 +560,7 @@ body {
 }
 
 .modal-text .highlight {
-  color: #ffd966;
+  color: #e07486;
   font-weight: 600;
 }
 
@@ -585,14 +586,14 @@ body {
 .final-result {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #ffd966;
+  color: #fcc8d2;
   text-shadow: 0 0 20px rgba(245, 176, 66, 0.3);
 }
 
 .final-sub {
   font-size: 1.2rem;
   font-weight: 400;
-  color: #b9c8ff;
+  color: #e07486;
   margin-top: 6px;
 }
 

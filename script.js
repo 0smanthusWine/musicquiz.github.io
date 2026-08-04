@@ -233,7 +233,7 @@
       }
     });
     
-    messageBox.textContent = `⏰ Время вышло! Правильный ответ: "${correct}"`;
+    messageBox.textContent = `⌛ Время вышло! Правильный ответ: "${correct}"`;
     messageBox.className = 'message-box timeout';
     
     timerCompact.classList.add('timeout');
