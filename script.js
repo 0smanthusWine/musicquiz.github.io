@@ -4,6 +4,7 @@
   // ======= ФОНОВАЯ МУЗЫКА =======
   let audioElement = null;
   let isMusicPlaying = false;
+  let isMusicManuallyTurnedOff = false;
 
   // ======= ЗВУКИ КНОПОК =======
   let clickAudio = null;
@@ -11,7 +12,6 @@
 
   function initClickSound() {
     if (!clickAudio) {
-      // ★★★ ИЗМЕНИТЕ ПУТЬ К СВОЕМУ ЗВУКОВОМУ ФАЙЛУ ★★★
       clickAudio = new Audio('music/click.mp3');
       clickAudio.volume = 0.1;
       
@@ -47,9 +47,7 @@
       if (clickAudio) {
         if (clickAudio instanceof HTMLAudioElement) {
           clickAudio.currentTime = 0;
-          clickAudio.play().catch(function(e) {
-            // Игнорируем ошибки
-          });
+          clickAudio.play().catch(function(e) {});
         } else if (clickAudio.isFallback) {
           const ctx = clickAudio.ctx;
           if (ctx.state === 'suspended') {
@@ -71,9 +69,7 @@
           osc.stop(ctx.currentTime + 0.08);
         }
       }
-    } catch (e) {
-      // Игнорируем ошибки
-    }
+    } catch (e) {}
   }
 
   function initAudio() {
@@ -81,6 +77,10 @@
       audioElement = new Audio('music/Loyalty_Freak_Music_-_08_-_I_care(chosic.com).mp3');
       audioElement.loop = true;
       audioElement.volume = 0.3;
+      
+      audioElement.addEventListener('error', function(e) {
+        console.error('Ошибка загрузки музыки:', e);
+      });
     }
     initClickSound();
   }
@@ -88,12 +88,20 @@
   function startMusic() {
     initAudio();
     if (!audioElement) return;
+    
+    if (isMusicPlaying) return;
+    
     audioElement.play()
       .then(() => {
         isMusicPlaying = true;
+        isMusicManuallyTurnedOff = false;
         updateMusicButton(true);
+        console.log('Музыка включена');
       })
-      .catch(() => {});
+      .catch((error) => {
+        console.log('Не удалось включить музыку:', error);
+        updateMusicButton(false);
+      });
   }
 
   function stopMusic() {
@@ -101,7 +109,9 @@
       audioElement.pause();
       audioElement.currentTime = 0;
       isMusicPlaying = false;
+      isMusicManuallyTurnedOff = true;
       updateMusicButton(false);
+      console.log('Музыка выключена пользователем');
     }
   }
 
@@ -109,6 +119,7 @@
     if (isMusicPlaying) {
       stopMusic();
     } else {
+      isMusicManuallyTurnedOff = false;
       startMusic();
     }
   }
@@ -467,7 +478,20 @@
 
     renderQuestion();
 
-    if (!isMusicPlaying) {
+    // ★★★ ПРОВЕРЯЕМ РЕАЛЬНОЕ СОСТОЯНИЕ МУЗЫКИ ★★★
+    // Если музыка играет - обновляем кнопку на 🔊
+    // Если музыка не играет - обновляем кнопку на 🔇
+    if (isMusicPlaying) {
+      updateMusicButton(true);
+    } else {
+      updateMusicButton(false);
+    }
+
+    // Включаем музыку только если:
+    // 1. Она не играет
+    // 2. Пользователь не выключал её вручную
+    // 3. Это первый запуск игры (не рестарт)
+    if (!isMusicPlaying && !isMusicManuallyTurnedOff) {
       startMusic();
     }
   }
@@ -492,6 +516,9 @@
     nextBtn.classList.remove('active');
     nextBtn.style.display = 'none';
     stopTimer();
+    
+    // ★★★ Сохраняем состояние кнопки при выходе в меню ★★★
+    updateMusicButton(isMusicPlaying);
   }
 
   function cancelGoToMenu() {
@@ -504,35 +531,28 @@
   }
 
   // ======= ЗАПРЕТ ПОВОРОТА ЭКРАНА =======
-function lockOrientation() {
-  // Проверяем поддержку screen.orientation API
-  if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock('portrait')
-      .then(() => {
-        console.log('Ориентация заблокирована в портретном режиме');
-      })
-      .catch((error) => {
-        console.log('Не удалось заблокировать ориентацию:', error);
-      });
+  function lockOrientation() {
+    if (screen.orientation && screen.orientation.lock) {
+      screen.orientation.lock('portrait')
+        .then(() => {
+          console.log('Ориентация заблокирована в портретном режиме');
+        })
+        .catch((error) => {
+          console.log('Не удалось заблокировать ориентацию:', error);
+        });
+    }
   }
-}
 
-// Запускаем при загрузке страницы
-document.addEventListener('DOMContentLoaded', lockOrientation);
-
-// Повторно блокируем при изменении ориентации (на случай, если разблокировалось)
-document.addEventListener('orientationchange', function() {
-  setTimeout(lockOrientation, 100);
-});
-
-// Также запускаем при первом касании (для мобильных браузеров)
-document.addEventListener('touchstart', function() {
-  lockOrientation();
-}, { once: true });
+  document.addEventListener('DOMContentLoaded', lockOrientation);
+  document.addEventListener('orientationchange', function() {
+    setTimeout(lockOrientation, 100);
+  });
+  document.addEventListener('touchstart', function() {
+    lockOrientation();
+  }, { once: true });
 
   // ======= ИНИЦИАЛИЗАЦИЯ =======
   function initGame() {
-    // Добавляем звук на все кнопки (кроме кнопки музыки)
     const allButtons = document.querySelectorAll('button');
     allButtons.forEach(btn => {
       if (btn.id !== 'musicBtn') {
@@ -576,6 +596,9 @@ document.addEventListener('touchstart', function() {
     gameScreen.style.display = 'none';
     gameScreen.classList.remove('active');
 
+    // Музыка выключена при входе на страницу
+    isMusicPlaying = false;
+    isMusicManuallyTurnedOff = false;
     updateMusicButton(false);
     initAudio();
   }
