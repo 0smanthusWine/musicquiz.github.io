@@ -12,8 +12,8 @@
   function initClickSound() {
     if (!clickAudio) {
       // ★★★ ИЗМЕНИТЕ ПУТЬ К СВОЕМУ ЗВУКОВОМУ ФАЙЛУ ★★★
-      clickAudio = new Audio('music/mixkit-game-ball-tap-2073.mp3');
-      clickAudio.volume = 0.3;
+      clickAudio = new Audio('music/click.mp3');
+      clickAudio.volume = 0.1;
       
       clickAudio.addEventListener('loadeddata', function() {
         clickSoundLoaded = true;
