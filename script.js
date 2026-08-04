@@ -503,6 +503,33 @@
     startGame(currentTheme);
   }
 
+  // ======= ЗАПРЕТ ПОВОРОТА ЭКРАНА =======
+function lockOrientation() {
+  // Проверяем поддержку screen.orientation API
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock('portrait')
+      .then(() => {
+        console.log('Ориентация заблокирована в портретном режиме');
+      })
+      .catch((error) => {
+        console.log('Не удалось заблокировать ориентацию:', error);
+      });
+  }
+}
+
+// Запускаем при загрузке страницы
+document.addEventListener('DOMContentLoaded', lockOrientation);
+
+// Повторно блокируем при изменении ориентации (на случай, если разблокировалось)
+document.addEventListener('orientationchange', function() {
+  setTimeout(lockOrientation, 100);
+});
+
+// Также запускаем при первом касании (для мобильных браузеров)
+document.addEventListener('touchstart', function() {
+  lockOrientation();
+}, { once: true });
+
   // ======= ИНИЦИАЛИЗАЦИЯ =======
   function initGame() {
     // Добавляем звук на все кнопки (кроме кнопки музыки)

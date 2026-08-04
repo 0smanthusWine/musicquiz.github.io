@@ -19,6 +19,7 @@ body {
   padding: 12px;
   margin: 0;
   color: #f0f4ff;
+  overflow: hidden;
 }
 
 .game-container {
@@ -606,6 +607,10 @@ body {
 
 /* ===== АДАПТИВ ===== */
 @media (max-width: 600px) {
+  body{
+    background-size: 250%;
+  }
+
   .game-container {
     padding: 20px 14px 24px;
     border-radius: 32px 32px 24px 24px;
@@ -674,6 +679,9 @@ body {
 }
 
 @media (max-width: 480px) {
+  body{
+    background-size: 400%;
+  }
   .game-container {
     padding: 16px 12px 20px;
     border-radius: 28px 28px 20px 20px;
