@@ -136,7 +136,18 @@ const QUESTIONS_BY_THEME = {
     { question: 'Кто спел "Crazy in Love" с JAY-Z?', answer: 'Beyonce', category: 'artist' },
     { question: 'Какой певец исполнил песню "Grenade"?', answer: 'Bruno Mars', category: 'artist' },
     { question: 'Какой певец исполнил песню "As it was"?', answer: 'Harry Styles', category: 'artist' },
+    { question: 'Какой певец исполнил песню "Выпускной"?', answer: 'Баста', category: 'artist' },
+    { question: 'Кто спел "На Титанике"', answer: 'Лолита', category: 'artist' },
+    { question: 'Чья песня начинается со слов: "Уютное кафе..."', answer: 'Елка', category: 'artist' },
+    { question: 'Певица, исполнившая песню "Кукушка" группы Кино', answer: 'Полина Гагарина', category: 'artist' },
+    { question: 'Чьи песни "Мокрые кроссы" и "Незабудка"', answer: 'Тима Белорусских', category: 'artist' },
+    { question: 'У кого цвет настроения синий?', answer: 'Филипп Киркоров', category: 'artist' },
+    { question: 'Кто автор псени "мальчик на девятке"', answer: 'DEAD BLONDE', category: 'artist' },
+    { question: 'Единственный представитель России, победивший на конкурсе «Евровидение»', answer: 'Дима Билан', category: 'artist' },
+    { question: 'Дважды представлял Россию на «Евровидение»: В 2016 и в 2019 годах занял третье место', answer: 'Сергей Лазарев', category: 'artist' },
+    { question: 'В 2002 году брал уроки вокала у певицы Монсеррат Кабалье, вместе с ней выступал с концертами.', answer: 'Николай Басков', category: 'artist' },
 
+    
     
     // ===== ПЕСНИ (song) =====
    // { question: 'Как называется эта песня ABBA?', image: 'https://picsum.photos/seed/abba/400/200', answer: 'waterloo', category: 'song' },
@@ -164,7 +175,7 @@ const QUESTIONS_BY_THEME = {
     { question: 'Бойз-бенд, спецщий "I Want It That Way":', answer: 'Backstreet Boys', category: 'band' },
     { question: 'Группа с песней "Bye Bye Bye":', answer: 'nsync', category: 'band' },
     { question: 'Поп-группа "Spice Girls":', answer: 'spice girls', category: 'band' },
-    { question: 'Австралийская группа "Kylie Minogue"?', answer: 'the seekers', category: 'band' },
+    { question: 'Какая южнокорейская группа приняла участие в шоу, которое прошло в перерыве финального матча чемпионата мира по футболу FIFA 2026"?', answer: 'BTS', category: 'band' },
   ],
   
   rock: [
